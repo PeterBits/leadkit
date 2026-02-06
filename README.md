@@ -1,6 +1,6 @@
-# Frontend Team Manager
+# LEADKIT
 
-Aplicación web para gestión de equipos de desarrollo frontend con tablero Kanban y seguimiento de reuniones semanales.
+Aplicación web para gestión de equipos de desarrollo frontend: tablero Kanban, seguimiento de reuniones y dashboard de equipo.
 
 ## Índice
 
@@ -20,13 +20,13 @@ Aplicación web para gestión de equipos de desarrollo frontend con tablero Kanb
 
 ## Descripción
 
-Frontend Team Manager es una aplicación diseñada para technical leads que gestionan equipos de desarrollo frontend. Permite:
+LEADKIT es una aplicación diseñada para technical leads que gestionan equipos de desarrollo frontend. Permite:
 
 - Gestionar tareas del equipo mediante un tablero Kanban (To Do → Doing → Done)
 - Preparar y documentar reuniones semanales con el lead
 - Configurar dinámicamente miembros del equipo y prioridades
 - Almacenar todos los datos localmente en el navegador (IndexedDB)
-- **Responsive:** Optimizada para móvil con navegación por tabs
+- **Responsive:** Sidebar en desktop, bottom tab bar en móvil
 - **PWA:** Instalable como aplicación nativa
 
 **Contexto de uso:** Pensada para technical leads con equipos de cualquier tamaño, con reuniones periódicas de seguimiento.
@@ -35,15 +35,16 @@ Frontend Team Manager es una aplicación diseñada para technical leads que gest
 
 ## Tecnologías
 
-| Tecnología      | Versión | Propósito               |
-| --------------- | ------- | ----------------------- |
-| React           | 18.x    | UI Library              |
-| TypeScript      | 5.x     | Type safety             |
-| Vite            | 6.x     | Build tool              |
-| vite-plugin-pwa | 1.x     | Progressive Web App     |
-| IndexedDB       | Nativo  | Persistencia local      |
-| Tailwind CSS    | 3.x     | Estilos (utility-first) |
-| Lucide React    | 0.263.x | Iconografía             |
+| Tecnología       | Versión | Propósito                |
+| ---------------- | ------- | ------------------------ |
+| React            | 18.x    | UI Library               |
+| TypeScript       | 5.x     | Type safety              |
+| Vite             | 6.x     | Build tool               |
+| React Router     | 6.x     | Client-side routing      |
+| vite-plugin-pwa  | 1.x     | Progressive Web App      |
+| IndexedDB        | Nativo  | Persistencia local       |
+| Tailwind CSS     | 3.x     | Estilos (utility-first)  |
+| Lucide React     | 0.263.x | Iconografía              |
 
 ---
 
@@ -51,7 +52,7 @@ Frontend Team Manager es una aplicación diseñada para technical leads que gest
 
 ```bash
 # Clonar o entrar al directorio
-cd frontend-team-manager
+cd leadkit
 
 # Instalar dependencias
 npm install
@@ -86,39 +87,72 @@ npm run lint     # Linting con ESLint
 ## Estructura del Proyecto
 
 ```
-frontend-team-manager/
+leadkit/
 ├── src/
+│   ├── views/                          # Una carpeta por vista
+│   │   ├── dashboard/
+│   │   │   └── DashboardPage.tsx       # Vista principal con resumen
+│   │   ├── tasks/
+│   │   │   ├── TasksPage.tsx           # Kanban de tareas
+│   │   │   └── components/             # Componentes exclusivos de tasks
+│   │   │       ├── KanbanColumn.tsx
+│   │   │       ├── TaskCard.tsx
+│   │   │       ├── TaskModal.tsx
+│   │   │       └── index.ts
+│   │   ├── meetings/
+│   │   │   ├── MeetingsPage.tsx        # Resúmenes semanales
+│   │   │   └── components/             # Componentes exclusivos de meetings
+│   │   │       ├── SummaryItemCard.tsx
+│   │   │       └── index.ts
+│   │   ├── team/
+│   │   │   └── TeamPage.tsx            # Seguimiento de equipo (próximamente)
+│   │   ├── settings/
+│   │   │   └── SettingsPage.tsx        # Configuración de equipo y prioridades
+│   │   └── index.ts
 │   ├── components/
-│   │   ├── kanban/
-│   │   │   ├── index.ts
-│   │   │   ├── KanbanColumn.tsx
-│   │   │   ├── TaskCard.tsx
-│   │   │   └── TaskModal.tsx
-│   │   ├── weekly-summary/
-│   │   │   ├── index.ts
-│   │   │   └── SummaryItemCard.tsx
-│   │   └── settings/
-│   │       ├── index.ts
-│   │       └── SettingsPanel.tsx
-│   ├── constants/
-│   │   └── index.ts            # Categorías y colores disponibles
+│   │   └── layout/                     # Componentes compartidos (navegación)
+│   │       ├── Layout.tsx              # Shell con Sidebar + BottomNav + Outlet
+│   │       ├── Sidebar.tsx             # Navegación desktop (sidebar izquierdo)
+│   │       ├── BottomNav.tsx           # Navegación móvil (tab bar inferior)
+│   │       └── index.ts
+│   ├── context/
+│   │   ├── DataContext.tsx             # Estado global: teamMembers, priorities
+│   │   ├── TasksContext.tsx            # Estado global: tasks
+│   │   └── index.ts
+│   ├── constants/                      # Constantes fragmentadas por entidad
+│   │   ├── priority.ts                # PRIORITY_COLORS
+│   │   ├── summary-item.ts            # CATEGORIES
+│   │   └── index.ts
 │   ├── services/
-│   │   └── database.ts         # Operaciones IndexedDB
-│   ├── types/
-│   │   └── index.ts            # Interfaces TypeScript
+│   │   └── database.ts                # Operaciones IndexedDB
+│   ├── types/                          # Sistema de tipos por entidad
+│   │   ├── entities/                   # Interfaces de datos
+│   │   │   ├── task.ts
+│   │   │   ├── summary-item.ts
+│   │   │   ├── team-member.ts
+│   │   │   ├── priority.ts
+│   │   │   └── index.ts
+│   │   ├── interfaces/                 # Props de componentes y contextos
+│   │   │   ├── task.ts
+│   │   │   ├── summary-item.ts
+│   │   │   ├── priority.ts
+│   │   │   ├── context.ts
+│   │   │   └── index.ts
+│   │   └── index.ts
 │   ├── utils/
-│   │   ├── dates.ts            # Utilidades de fechas/semanas
-│   │   └── ids.ts              # Generación de IDs
-│   ├── App.tsx                 # Componente principal
-│   ├── main.tsx                # Entry point
-│   ├── index.css               # Estilos globales + Tailwind
+│   │   ├── dates.ts                    # Utilidades de fechas/semanas
+│   │   └── ids.ts                      # Generación de IDs
+│   ├── App.tsx                         # Router shell (~20 líneas)
+│   ├── main.tsx                        # Entry point con BrowserRouter
+│   ├── index.css                       # Estilos globales + Tailwind
 │   └── vite-env.d.ts
 ├── public/
-│   └── icon.svg                # Icono PWA
+│   └── icon.svg                        # Icono PWA
+├── plan/                               # Plan de desarrollo por fases
 ├── index.html
 ├── package.json
 ├── tsconfig.json
-├── vite.config.ts              # Incluye configuración PWA
+├── vite.config.ts                      # Incluye configuración PWA
 ├── tailwind.config.js
 ├── postcss.config.js
 └── README.md
@@ -128,31 +162,56 @@ frontend-team-manager/
 
 ## Arquitectura
 
-### Patrón de Estado
+### Routing
 
-La aplicación usa **React State (useState)** para gestión de estado local, sincronizado con IndexedDB para persistencia.
+La aplicación usa **React Router v6** con las siguientes rutas:
+
+| Ruta         | Página           | Descripción                          |
+| ------------ | ---------------- | ------------------------------------ |
+| `/`          | DashboardPage    | Resumen general con contadores       |
+| `/tasks`     | TasksPage        | Kanban de tareas                     |
+| `/team`      | TeamPage         | Seguimiento del equipo (próximamente)|
+| `/meetings`  | MeetingsPage     | Resúmenes semanales                  |
+| `/settings`  | SettingsPage     | CRUD de miembros y prioridades       |
+
+### Navegación
+
+- **Desktop (sm:+):** Sidebar fijo a la izquierda (240px) con iconos + labels
+- **Móvil:** Bottom tab bar fijo con 5 iconos
+
+### Gestión de Estado
+
+Dos React Contexts para datos compartidos, estado local por página para el resto:
 
 ```
-┌──────────────────────────────────────────────────────────────────┐
-│                           App.tsx                                 │
-│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐  ┌─────────┐ │
-│  │ tasks[]     │  │ summaries[] │  │ teamMembers │  │priorities│ │
-│  │ (useState)  │  │ (useState)  │  │ (useState)  │  │(useState)│ │
-│  └──────┬──────┘  └──────┬──────┘  └──────┬──────┘  └────┬────┘ │
-│         │                │                │               │      │
-│         ▼                ▼                ▼               ▼      │
-│  ┌────────────────────────────────────────────────────────────┐ │
-│  │                    IndexedDB Service                        │ │
-│  │  - initDB()                                                 │ │
-│  │  - dbOperation<T>(store, mode, operation)                   │ │
-│  │  Stores: tasks, summaries, teamMembers, priorities          │ │
-│  └────────────────────────────────────────────────────────────┘ │
-└──────────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────┐
+│                    App.tsx                        │
+│  ┌─────────────┐  ┌──────────────┐               │
+│  │ DataProvider │  │ TasksProvider│               │
+│  │ teamMembers │  │ tasks[]      │               │
+│  │ priorities  │  │ CRUD handlers│               │
+│  └──────┬──────┘  └──────┬───────┘               │
+│         │                │                        │
+│         ▼                ▼                        │
+│  ┌────────────────────────────────────────────┐  │
+│  │              Pages (local state)            │  │
+│  │  TasksPage: modalTask, filter, tabs         │  │
+│  │  MeetingsPage: summaries, currentWeek, form │  │
+│  │  SettingsPage: form inputs                  │  │
+│  └────────────────────────────────────────────┘  │
+│         │                                         │
+│         ▼                                         │
+│  ┌────────────────────────────────────────────┐  │
+│  │              IndexedDB Service              │  │
+│  │  Stores: tasks, summaries, teamMembers,     │  │
+│  │          priorities                          │  │
+│  └────────────────────────────────────────────┘  │
+└─────────────────────────────────────────────────┘
 ```
 
 ### Flujo de Datos
 
-1. **Carga inicial:** `useEffect` → `dbOperation(getAll)` para cada store → `setState()`
+1. **Carga inicial:** Contexts + Pages → `dbOperation(getAll)` → `setState()`
 2. **Crear/Editar:** Acción usuario → `save*()` → `dbOperation(put)` → `setState()`
 3. **Eliminar:** Acción usuario → `delete*()` → `dbOperation(delete)` → `setState()`
 4. **Mover tarea:** Click flecha → `moveTask()` → `saveTask()` con nuevo status
@@ -294,95 +353,94 @@ await dbOperation('priorities', 'readwrite', store => store.delete(id));
 ### Jerarquía
 
 ```
-App
-├── Header (nav entre vistas + botón configuración)
-├── KanbanView (view === 'kanban')
-│   ├── Filtros (select por miembro del equipo)
-│   ├── KanbanColumn (x3: todo, doing, done)
-│   │   └── TaskCard (x n tareas)
-│   └── TaskModal (crear/editar)
-├── WeeklySummaryView (view === 'weekly')
-│   ├── WeekSelector (navegación semanas)
-│   ├── AddSummaryForm (título + descripción + categoría)
-│   └── CategorySection (x4 categorías)
-│       └── SummaryItemCard (título + descripción)
-└── SettingsPanel (panel lateral)
-    ├── TeamMembersSection (CRUD miembros)
-    └── PrioritiesSection (CRUD prioridades)
+App (Router shell)
+└── Layout
+    ├── Sidebar (desktop)
+    ├── BottomNav (móvil)
+    └── Outlet → Pages
+        ├── DashboardPage
+        │   └── Contadores + Accesos rápidos
+        ├── TasksPage
+        │   ├── Filtros (select por miembro)
+        │   ├── KanbanColumn (x3: todo, doing, done)
+        │   │   └── TaskCard (x n tareas)
+        │   └── TaskModal (crear/editar)
+        ├── TeamPage (próximamente)
+        ├── MeetingsPage
+        │   ├── WeekSelector (navegación semanas)
+        │   ├── AddSummaryForm (título + descripción + categoría)
+        │   └── CategorySection (x4 categorías)
+        │       └── SummaryItemCard (título + descripción)
+        └── SettingsPage
+            ├── TeamMembersSection (CRUD miembros)
+            └── PrioritiesSection (CRUD prioridades)
 ```
 
 ### Componentes Principales
 
-| Componente        | Props                                                    | Responsabilidad                    |
-| ----------------- | -------------------------------------------------------- | ---------------------------------- |
-| `TaskCard`        | task, teamMembers, priorities, onEdit, onDelete, onMove  | Renderiza tarea con acciones       |
-| `KanbanColumn`    | title, status, tasks, teamMembers, priorities, callbacks | Columna del Kanban                 |
-| `TaskModal`       | task, teamMembers, priorities, onSave, onClose           | Modal crear/editar tarea           |
-| `SummaryItemCard` | item, onDelete                                           | Ítem con título y descripción      |
-| `SettingsPanel`   | isOpen, teamMembers, priorities, callbacks               | Panel de configuración lateral     |
+| Componente        | Ubicación                       | Responsabilidad                    |
+| ----------------- | ------------------------------- | ---------------------------------- |
+| `Layout`          | components/layout/              | Shell con Sidebar + BottomNav      |
+| `Sidebar`         | components/layout/              | Navegación desktop                 |
+| `BottomNav`       | components/layout/              | Navegación móvil                   |
+| `TaskCard`        | views/tasks/components/         | Renderiza tarea con acciones       |
+| `KanbanColumn`    | views/tasks/components/         | Columna del Kanban                 |
+| `TaskModal`       | views/tasks/components/         | Modal crear/editar tarea           |
+| `SummaryItemCard` | views/meetings/components/      | Ítem con título y descripción      |
 
 ---
 
 ## Funcionalidades
 
-### Kanban Board
+### Kanban Board (`/tasks`)
 
-- ✅ Tres columnas con estados: To Do, Doing, Done
-- ✅ Crear tareas con título, descripción, miembro asignado, prioridad
-- ✅ Editar tareas existentes
-- ✅ Eliminar tareas
-- ✅ Mover tareas entre columnas (flechas ← →)
-- ✅ Filtrar por miembro del equipo (dinámico)
-- ✅ Indicador visual de prioridad (borde coloreado según configuración)
-- ✅ Contador de tareas por columna
+- Tres columnas con estados: To Do, Doing, Done
+- Crear tareas con título, descripción, miembro asignado, prioridad
+- Editar tareas existentes
+- Eliminar tareas
+- Mover tareas entre columnas (flechas)
+- Filtrar por miembro del equipo
+- Indicador visual de prioridad (borde coloreado)
+- Contador de tareas por columna
 
-### Resumen Semanal
+### Resumen Semanal (`/meetings`)
 
-- ✅ Navegación entre semanas (anterior/siguiente)
-- ✅ Mostrar rango de fechas de la semana
-- ✅ Añadir ítems con título y descripción opcional
-- ✅ Cuatro categorías diferenciadas por color
-- ✅ Eliminar ítems
-- ✅ Persistencia por semana (cada semana guarda sus ítems)
+- Navegación entre semanas (anterior/siguiente)
+- Mostrar rango de fechas de la semana
+- Añadir ítems con título y descripción opcional
+- Cuatro categorías diferenciadas por color
+- Eliminar ítems
+- Persistencia por semana
 
-### Configuración (Panel Lateral)
+### Configuración (`/settings`)
 
-- ✅ Crear miembros del equipo
-- ✅ Eliminar miembros del equipo
-- ✅ Crear niveles de prioridad (1-10) con color asociado
-- ✅ Eliminar prioridades
-- ✅ Prioridades únicas por nivel (no se pueden repetir)
-- ✅ 8 colores disponibles para prioridades
+- Crear/eliminar miembros del equipo
+- Crear/eliminar niveles de prioridad (1-10) con color asociado
+- Prioridades únicas por nivel
+- 8 colores disponibles
 
-### Tarjetas de Tarea
+### Dashboard (`/`)
 
-- ✅ Icono de persona junto al nombre del asignado
-- ✅ Etiqueta de prioridad con color y nivel (ej: "P1", "P2")
-- ✅ Borde lateral con el color de la prioridad
+- Contadores de tareas por estado
+- Contador de miembros del equipo
+- Accesos rápidos a tareas y reuniones
 
 ### Persistencia
 
-- ✅ Almacenamiento en IndexedDB
-- ✅ Carga automática al iniciar
-- ✅ Guardado automático en cada acción
-- ✅ Sin dependencia de backend/servidor
+- Almacenamiento en IndexedDB
+- Carga automática al iniciar
+- Guardado automático en cada acción
 
 ### PWA (Progressive Web App)
 
-- ✅ Instalable en móvil y escritorio
-- ✅ Funciona offline (datos en IndexedDB)
-- ✅ Icono personalizado
-- ✅ Splash screen al iniciar
+- Instalable en móvil y escritorio
+- Funciona offline
+- Icono personalizado
 
 ### Responsive Design
 
-- ✅ **Móvil:** Kanban con tabs (To Do / Doing / Done)
-- ✅ **Móvil:** Modal tipo bottom sheet
-- ✅ **Móvil:** Panel de configuración a pantalla completa
-- ✅ **Móvil:** Menú hamburguesa para navegación
-- ✅ **Tablet/Desktop:** Kanban con 3 columnas
-- ✅ **Tablet/Desktop:** Modal centrado
-- ✅ Header sticky en todas las vistas
+- **Móvil:** Kanban con tabs, modal tipo bottom sheet, bottom tab bar
+- **Desktop:** Kanban con 3 columnas, modal centrado, sidebar lateral
 
 ---
 
@@ -390,20 +448,18 @@ App
 
 ### Añadir miembros del equipo
 
-Los miembros del equipo se gestionan desde el panel de configuración (icono de engranaje en el header). No es necesario modificar código.
+Los miembros del equipo se gestionan desde `/settings`. No es necesario modificar código.
 
 ### Añadir prioridades
 
-Las prioridades se gestionan desde el panel de configuración. Cada prioridad tiene:
+Las prioridades se gestionan desde `/settings`. Cada prioridad tiene:
 - **Nivel:** Del 1 al 10 (1 = máxima prioridad)
 - **Color:** Seleccionable de 8 opciones
-
-> Las prioridades se muestran en las tarjetas como "P1", "P2", etc. con el color de fondo correspondiente.
 
 ### Añadir nueva categoría de resumen
 
 ```typescript
-// En src/constants/index.ts
+// En src/constants/summary-item.ts
 import { MessageCircle } from 'lucide-react';
 
 export const CATEGORIES = {
@@ -415,22 +471,28 @@ export const CATEGORIES = {
   },
 };
 
-// En src/types/index.ts - actualizar el tipo SummaryItem.category
+// En src/types/entities/summary-item.ts - actualizar el tipo SummaryItem.category
 category: "discussion" | "blocker" | "achievement" | "action-item" | "feedback";
-// (El tipo también incluye: title, description, id, weekNumber, year, createdAt)
 ```
 
 ### Añadir campo a Task
 
-1. Actualizar interface `Task` en `src/types/index.ts`
-2. Actualizar `TaskModal` en `src/components/kanban/TaskModal.tsx` (estado + input)
-3. Actualizar `TaskCard` en `src/components/kanban/TaskCard.tsx` si debe mostrarse
-4. Considerar migración de IndexedDB si hay datos existentes (incrementar DB_VERSION)
+1. Actualizar interface `Task` en `src/types/entities/task.ts`
+2. Actualizar `TaskModal` en `src/views/tasks/components/TaskModal.tsx`
+3. Actualizar `TaskCard` en `src/views/tasks/components/TaskCard.tsx` si debe mostrarse
+4. Considerar migración de IndexedDB si hay datos existentes
+
+### Añadir nueva ruta/página
+
+1. Crear carpeta `src/views/nueva/` con `NuevaPage.tsx`
+2. Exportar desde `src/views/index.ts`
+3. Añadir `<Route>` en `src/App.tsx`
+4. Añadir entrada en `NAV_ITEMS` en `Sidebar.tsx` y `BottomNav.tsx`
 
 ### Añadir nuevo color para prioridades
 
 ```typescript
-// En src/constants/index.ts
+// En src/constants/priority.ts
 export const PRIORITY_COLORS = [
   // ... existentes
   { value: 'cyan-400', label: 'Cian', bg: 'bg-cyan-400' },
@@ -486,6 +548,7 @@ export const PRIORITY_COLORS = [
 - TypeScript estricto
 - Tailwind CSS para estilos
 - Sin dependencias innecesarias
+- **Interfaces:** Nunca declarar interfaces o types en componentes, services ni contexts. Todas las interfaces se definen en `types/entities/` (modelos de datos) o `types/interfaces/` (props de componentes, types de contextos). Un archivo por entidad.
 
 ### Convenciones de naming
 
@@ -497,10 +560,10 @@ export const PRIORITY_COLORS = [
 
 ### Puntos de extensión comunes
 
-1. Añadir campos a tareas → modificar `Task` interface + `TaskModal` + `TaskCard`
-2. Nuevas vistas → añadir a `View` type + navegación en header
-3. Nuevas categorías → modificar `CATEGORIES` constant + tipo `SummaryItem`
-4. Nuevos colores → modificar `PRIORITY_COLORS` + `tailwind.config.js` safelist
+1. Añadir campos a tareas → modificar `types/entities/task.ts` + `views/tasks/components/TaskModal` + `TaskCard`
+2. Nuevas páginas → crear carpeta en `views/` + añadir Route en `App.tsx` + nav items
+3. Nuevas categorías → modificar `constants/summary-item.ts` + `types/entities/summary-item.ts`
+4. Nuevos colores → modificar `constants/priority.ts` + `tailwind.config.js` safelist
 5. Cambios en DB → incrementar `DB_VERSION` + handle `onupgradeneeded`
 
 ---

@@ -1,15 +1,6 @@
 import React from 'react';
 import { Trash2, Edit2, ArrowRight, ArrowLeft, User } from 'lucide-react';
-import { Task, TeamMember, Priority } from '../../types';
-
-interface TaskCardProps {
-  task: Task;
-  teamMembers: TeamMember[];
-  priorities: Priority[];
-  onEdit: (task: Task) => void;
-  onDelete: (id: string) => void;
-  onMove: (id: string, status: Task['status']) => void;
-}
+import { TaskCardProps } from '../../../types';
 
 export const TaskCard: React.FC<TaskCardProps> = ({
   task,

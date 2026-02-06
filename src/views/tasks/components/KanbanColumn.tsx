@@ -1,18 +1,6 @@
 import React from 'react';
-import { Task, TeamMember, Priority } from '../../types';
+import { KanbanColumnProps } from '../../../types';
 import { TaskCard } from './TaskCard';
-
-interface KanbanColumnProps {
-  title: string;
-  status: Task['status'];
-  tasks: Task[];
-  teamMembers: TeamMember[];
-  priorities: Priority[];
-  color: string;
-  onEdit: (task: Task) => void;
-  onDelete: (id: string) => void;
-  onMove: (id: string, status: Task['status']) => void;
-}
 
 export const KanbanColumn: React.FC<KanbanColumnProps> = ({
   title,

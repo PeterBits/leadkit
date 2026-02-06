@@ -2,45 +2,45 @@
 
 ## 0.1 Sistema de Rutas
 
-- [ ] Instalar `react-router-dom`
-- [ ] Crear layout principal con sidebar/navbar persistente
-- [ ] Configurar rutas: `/`, `/tasks`, `/team`, `/meetings`, `/settings`
-- [ ] Adaptar la navegación actual (header) al nuevo sistema de rutas
+- [x] Instalar `react-router-dom`
+- [x] Crear layout principal con sidebar/navbar persistente
+- [x] Configurar rutas: `/`, `/tasks`, `/team`, `/meetings`, `/settings`
+- [x] Adaptar la navegación actual (header) al nuevo sistema de rutas
 
 ## 0.2 Refactor de Estado
 
-- [ ] Extraer el estado de `App.tsx` a contextos o moverlo a nivel de cada página
-- [ ] Evaluar si conviene un contexto global para datos compartidos (teamMembers, priorities, categories) y estado local por página para el resto
-- [ ] Mantener la sincronización con IndexedDB
+- [x] Extraer el estado de `App.tsx` a contextos o moverlo a nivel de cada página
+- [x] Evaluar si conviene un contexto global para datos compartidos (teamMembers, priorities, categories) y estado local por página para el resto
+- [x] Mantener la sincronización con IndexedDB
 
 ## 0.3 Nueva Estructura de Carpetas
 
-- [ ] Crear estructura de carpetas:
+- [x] Crear estructura de carpetas:
   ```
   src/
   ├── pages/
-  │   ├── Dashboard.tsx
-  │   ├── PersonalTasks.tsx
-  │   ├── TeamTracking.tsx
-  │   ├── Meetings.tsx
-  │   └── Settings.tsx
+  │   ├── DashboardPage.tsx
+  │   ├── TasksPage.tsx
+  │   ├── TeamPage.tsx
+  │   ├── MeetingsPage.tsx
+  │   └── SettingsPage.tsx
   ├── components/
-  │   ├── layout/          # Navbar, Sidebar, Layout
+  │   ├── layout/          # Layout, Sidebar, BottomNav
   │   ├── kanban/          # Componentes Kanban reutilizables
   │   ├── team/            # Componentes específicos de tracking
   │   ├── meetings/        # Componentes de reuniones
-  │   ├── settings/        # Panel de configuración
-  │   └── shared/          # Componentes compartidos (Modal, Timeline, etc.)
+  │   ├── settings/        # (eliminado - migrado a SettingsPage)
+  │   └── shared/          # Componentes compartidos
   ├── services/
-  │   └── database.ts      # Ampliar con nuevos stores
+  │   └── database.ts
   ├── types/
-  │   └── index.ts         # Nuevos modelos de datos
+  │   └── index.ts
   ├── constants/
   ├── utils/
-  └── context/             # Contextos de React (si se decide usar)
+  └── context/             # DataContext + TasksContext
   ```
-- [ ] Mover archivos existentes a la nueva estructura
-- [ ] Actualizar imports en todos los archivos afectados
+- [x] Mover archivos existentes a la nueva estructura
+- [x] Actualizar imports en todos los archivos afectados
 
 ## 0.4 Migración de IndexedDB
 
@@ -48,3 +48,5 @@
 - [ ] Añadir nuevos object stores (ver Fase 1)
 - [ ] Migrar los datos existentes de `tasks` → `personal_tasks`
 - [ ] Migrar `summaries` → se mantendrá o transformará según la nueva sección de reuniones
+
+> **Nota:** La sub-fase 0.4 se difiere a después de la Fase 1, ya que depende de los nuevos modelos de datos.

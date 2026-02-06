@@ -1,20 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { X, ChevronDown } from 'lucide-react';
-import { Task, TeamMember, Priority } from '../../types';
-
-interface TaskModalProps {
-  task: Task | null;
-  teamMembers: TeamMember[];
-  priorities: Priority[];
-  onSave: (task: Omit<Task, 'id' | 'createdAt' | 'updatedAt'> & { id?: string }) => void;
-  onClose: () => void;
-}
-
-interface PrioritySelectorProps {
-  priorities: Priority[];
-  value: string | null;
-  onChange: (value: string | null) => void;
-}
+import { Task, TaskModalProps, PrioritySelectorProps } from '../../../types';
 
 const PrioritySelector: React.FC<PrioritySelectorProps> = ({ priorities, value, onChange }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -108,7 +94,6 @@ export const TaskModal: React.FC<TaskModalProps> = ({
         className="bg-white w-full sm:rounded-lg sm:max-w-md max-h-[90vh] overflow-y-auto rounded-t-2xl"
         onClick={e => e.stopPropagation()}
       >
-        {/* Handle bar for mobile */}
         <div className="sm:hidden flex justify-center pt-2 pb-1">
           <div className="w-10 h-1 bg-gray-300 rounded-full" />
         </div>

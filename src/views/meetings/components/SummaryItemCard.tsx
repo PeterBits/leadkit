@@ -1,12 +1,7 @@
 import React from 'react';
 import { Trash2 } from 'lucide-react';
-import { SummaryItem } from '../../types';
-import { CATEGORIES } from '../../constants';
-
-interface SummaryItemCardProps {
-  item: SummaryItem;
-  onDelete: (id: string) => void;
-}
+import { SummaryItemCardProps } from '../../../types';
+import { CATEGORIES } from '../../../constants';
 
 export const SummaryItemCard: React.FC<SummaryItemCardProps> = ({ item, onDelete }) => {
   const cat = CATEGORIES[item.category];
