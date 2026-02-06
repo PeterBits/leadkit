@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install)",
+      "Bash(npm run dev)",
+      "Bash(timeout:*)",
+      "mcp__plugin_testing-suite_playwright-server__browser_navigate",
+      "mcp__plugin_testing-suite_playwright-server__browser_close",
+      "Bash(del \"C:\\\\Users\\\\pparra\\\\PROJECTS\\\\LEADKIT\\\\file.tsx\")",
+      "mcp__plugin_testing-suite_playwright-server__browser_click",
+      "Bash(npm install:*)",
+      "mcp__plugin_testing-suite_playwright-server__browser_resize",
+      "mcp__plugin_testing-suite_playwright-server__browser_snapshot",
+      "mcp__plugin_testing-suite_playwright-server__browser_type",
+      "mcp__plugin_testing-suite_playwright-server__browser_take_screenshot",
+      "Bash(git -C \"C:\\\\Users\\\\Pedro\\\\Desktop\\\\LEADKIT\" status)"
+    ]
+  }
+}
