@@ -58,7 +58,7 @@ export function MeetingsPage() {
   return (
     <>
       {/* Weekly Summary Header */}
-      <div className="flex justify-between items-center mb-4 sm:mb-6 bg-white rounded-lg p-3 sm:p-4 shadow-sm">
+      <div className="flex justify-between items-center mb-4 sm:mb-6 bg-gray-900 rounded-lg p-3 sm:p-4 border border-gray-800">
         <button
           onClick={() =>
             setCurrentWeek(prev => {
@@ -66,7 +66,7 @@ export function MeetingsPage() {
               return getWeekNumber(d);
             })
           }
-          className="p-2 hover:bg-gray-100 rounded-lg"
+          className="p-2 hover:bg-gray-700 rounded-lg"
         >
           <ChevronLeft size={20} className="sm:w-6 sm:h-6" />
         </button>
@@ -74,7 +74,7 @@ export function MeetingsPage() {
           <h2 className="text-base sm:text-lg font-semibold">
             Semana {currentWeek.week}, {currentWeek.year}
           </h2>
-          <p className="text-xs sm:text-sm text-gray-500">
+          <p className="text-xs sm:text-sm text-gray-400">
             {formatDate(weekDates.start)} - {formatDate(weekDates.end)}
           </p>
         </div>
@@ -85,20 +85,20 @@ export function MeetingsPage() {
               return getWeekNumber(d);
             })
           }
-          className="p-2 hover:bg-gray-100 rounded-lg"
+          className="p-2 hover:bg-gray-700 rounded-lg"
         >
           <ChevronRight size={20} className="sm:w-6 sm:h-6" />
         </button>
       </div>
 
       {/* Add Summary Form */}
-      <div className="bg-white rounded-lg p-3 sm:p-4 shadow-sm mb-4 sm:mb-6">
+      <div className="bg-gray-900 rounded-lg p-3 sm:p-4 border border-gray-800 mb-4 sm:mb-6">
         <div className="space-y-2">
           <div className="flex flex-col sm:flex-row gap-2">
             <select
               value={summaryCategory}
               onChange={e => setSummaryCategory(e.target.value as SummaryItem['category'])}
-              className="border rounded-lg px-3 py-2 text-sm sm:w-40"
+              className="border border-gray-700 rounded-lg px-3 py-2 text-sm sm:w-40"
             >
               {Object.entries(CATEGORIES).map(([k, v]) => (
                 <option key={k} value={k}>
@@ -111,7 +111,7 @@ export function MeetingsPage() {
               value={summaryTitle}
               onChange={e => setSummaryTitle(e.target.value)}
               placeholder="Título"
-              className="flex-1 border rounded-lg px-3 py-2 text-sm"
+              className="flex-1 border border-gray-700 rounded-lg px-3 py-2 text-sm"
             />
           </div>
           <div className="flex gap-2">
@@ -120,7 +120,7 @@ export function MeetingsPage() {
               value={summaryDescription}
               onChange={e => setSummaryDescription(e.target.value)}
               placeholder="Descripción (opcional)"
-              className="flex-1 border rounded-lg px-3 py-2 text-sm"
+              className="flex-1 border border-gray-700 rounded-lg px-3 py-2 text-sm"
               onKeyDown={e => e.key === 'Enter' && addSummary()}
             />
             <button
@@ -138,12 +138,12 @@ export function MeetingsPage() {
         {Object.entries(CATEGORIES).map(([key, cat]) => {
           const items = weekSummaries.filter(s => s.category === key);
           return (
-            <div key={key} className="bg-white rounded-lg p-3 sm:p-4 shadow-sm">
+            <div key={key} className="bg-gray-900 rounded-lg p-3 sm:p-4 border border-gray-800">
               <h3 className="font-semibold mb-3 flex items-center gap-2 text-sm sm:text-base">
                 <cat.icon size={18} /> {cat.label} ({items.length})
               </h3>
               {items.length === 0 ? (
-                <p className="text-gray-400 text-sm italic">Sin elementos</p>
+                <p className="text-gray-500 text-sm italic">Sin elementos</p>
               ) : (
                 items.map(item => (
                   <SummaryItemCard key={item.id} item={item} onDelete={deleteSummary} />

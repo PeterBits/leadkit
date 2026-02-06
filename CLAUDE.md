@@ -68,6 +68,10 @@ Each CRUD operation writes to IndexedDB first, then updates React state.
 - **Mobile:** Fixed bottom tab bar with NavLink × 5
 - Nav items are defined in `Sidebar.tsx` and `BottomNav.tsx` as `NAV_ITEMS` arrays
 
+### Theme
+
+Permanent dark theme. Base colors set in `index.css` via `@layer base` (body: `bg-gray-950 text-gray-100`, form elements: `bg-gray-800 border-gray-700`). All components use dark palette directly — no light/dark toggle. Key surfaces: `bg-gray-950` (page), `bg-gray-900` (cards/panels), `bg-gray-800` (inputs/rows/badges). Accents: `blue-400`, `green-400`, `purple-400`. Primary buttons remain `bg-blue-600`.
+
 ### Dynamic Tailwind Classes
 
 Priority colors are applied dynamically (e.g., `` bg-${priority.color} ``, `` border-l-${priority.color} ``). These classes **must** be listed in `tailwind.config.js` `safelist` or they won't be generated. When adding new colors, update both `constants/priority.ts` (`PRIORITY_COLORS`) and the safelist.

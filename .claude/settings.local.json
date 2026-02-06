@@ -14,7 +14,8 @@
       "mcp__plugin_testing-suite_playwright-server__browser_type",
       "mcp__plugin_testing-suite_playwright-server__browser_take_screenshot",
       "Bash(git -C \"C:\\\\Users\\\\Pedro\\\\Desktop\\\\LEADKIT\" status)",
-      "Bash(npm run lint)"
+      "Bash(npm run lint)",
+      "Bash(npm run build:*)"
     ]
   }
 }

@@ -23,7 +23,7 @@ export const KanbanColumn: React.FC<KanbanColumnProps> = ({
           {filtered.length}
         </span>
       </div>
-      <div className="bg-gray-50 rounded-b-lg p-3 min-h-[400px]">
+      <div className="bg-gray-800/50 rounded-b-lg p-3 min-h-[400px]">
         {filtered.map(task => (
           <TaskCard
             key={task.id}

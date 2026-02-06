@@ -12,7 +12,7 @@ const NAV_ITEMS = [
 export function BottomNav() {
   return (
     <nav
-      className="sm:hidden fixed bottom-0 left-0 right-0 bg-white border-t z-30"
+      className="sm:hidden fixed bottom-0 left-0 right-0 bg-gray-900 border-t border-gray-800 z-30"
       style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
     >
       <div className="flex justify-around items-center h-16">
@@ -23,7 +23,7 @@ export function BottomNav() {
             end={to === '/'}
             className={({ isActive }) =>
               `flex flex-col items-center justify-center gap-0.5 px-2 py-1 text-xs transition-colors ${
-                isActive ? 'text-blue-600' : 'text-gray-500'
+                isActive ? 'text-blue-400' : 'text-gray-400'
               }`
             }
           >

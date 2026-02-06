@@ -424,6 +424,14 @@ App (Router shell)
 - Funciona offline
 - Icono personalizado
 
+### Dark Theme
+
+- Tema oscuro permanente (sin toggle)
+- Fondo página: `gray-950`, cards/paneles: `gray-900`, inputs/filas: `gray-800`
+- Acentos: `blue-400`, `green-400`, `purple-400`
+- Colores base definidos en `src/index.css` vía `@layer base`
+- `theme-color` meta configurado a `#030712`
+
 ### Responsive Design
 
 - **Móvil:** Kanban con tabs, modal tipo bottom sheet, bottom tab bar

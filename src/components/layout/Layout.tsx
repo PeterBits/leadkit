@@ -4,7 +4,7 @@ import { BottomNav } from './BottomNav';
 
 export function Layout() {
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-gray-950">
       <Sidebar />
       <BottomNav />
       <main className="sm:ml-60 pb-20 sm:pb-0">

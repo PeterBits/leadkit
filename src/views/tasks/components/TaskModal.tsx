@@ -23,7 +23,7 @@ const PrioritySelector: React.FC<PrioritySelectorProps> = ({ priorities, value, 
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full border rounded-lg px-3 py-2.5 text-base text-left flex items-center justify-between bg-white"
+        className="w-full border border-gray-700 rounded-lg px-3 py-2.5 text-base text-left flex items-center justify-between bg-gray-800"
       >
         {selected ? (
           <span className="flex items-center gap-2">
@@ -35,26 +35,26 @@ const PrioritySelector: React.FC<PrioritySelectorProps> = ({ priorities, value, 
             <span>Nivel {selected.level}</span>
           </span>
         ) : (
-          <span className="text-gray-500">Sin prioridad</span>
+          <span className="text-gray-400">Sin prioridad</span>
         )}
         <ChevronDown
           size={18}
-          className={`text-gray-400 transition-transform ${isOpen ? 'rotate-180' : ''}`}
+          className={`text-gray-500 transition-transform ${isOpen ? 'rotate-180' : ''}`}
         />
       </button>
 
       {isOpen && (
-        <div className="absolute z-10 w-full mt-1 bg-white border rounded-lg shadow-lg max-h-60 overflow-y-auto">
+        <div className="absolute z-10 w-full mt-1 bg-gray-800 border border-gray-700 rounded-lg shadow-lg shadow-black/50 max-h-60 overflow-y-auto">
           <button
             type="button"
             onClick={() => {
               onChange(null);
               setIsOpen(false);
             }}
-            className={`w-full px-3 py-2 text-left hover:bg-gray-50 flex items-center gap-2 ${!value ? 'bg-blue-50' : ''}`}
+            className={`w-full px-3 py-2 text-left hover:bg-gray-700 flex items-center gap-2 ${!value ? 'bg-blue-500/20' : ''}`}
           >
-            <span className="w-5 h-5 rounded-full bg-gray-200 flex items-center justify-center">
-              <span className="text-[10px] text-gray-400">-</span>
+            <span className="w-5 h-5 rounded-full bg-gray-700 flex items-center justify-center">
+              <span className="text-[10px] text-gray-500">-</span>
             </span>
             <span>Sin prioridad</span>
           </button>
@@ -66,7 +66,7 @@ const PrioritySelector: React.FC<PrioritySelectorProps> = ({ priorities, value, 
                 onChange(p.id);
                 setIsOpen(false);
               }}
-              className={`w-full px-3 py-2 text-left hover:bg-gray-50 flex items-center gap-2 ${value === p.id ? 'bg-blue-50' : ''}`}
+              className={`w-full px-3 py-2 text-left hover:bg-gray-700 flex items-center gap-2 ${value === p.id ? 'bg-blue-500/20' : ''}`}
             >
               <span
                 className={`w-5 h-5 rounded-full bg-${p.color} flex items-center justify-center`}
@@ -110,21 +110,21 @@ export const TaskModal: React.FC<TaskModalProps> = ({
 
   return (
     <div
-      className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-50 p-0 sm:p-4"
+      className="fixed inset-0 bg-black/60 flex items-end sm:items-center justify-center z-50 p-0 sm:p-4"
       onClick={onClose}
     >
       <div
-        className="bg-white w-full sm:rounded-lg sm:max-w-md max-h-[90vh] overflow-y-auto rounded-t-2xl"
+        className="bg-gray-900 w-full sm:rounded-lg sm:max-w-md max-h-[90vh] overflow-y-auto rounded-t-2xl"
         onClick={e => e.stopPropagation()}
       >
         <div className="sm:hidden flex justify-center pt-2 pb-1">
-          <div className="w-10 h-1 bg-gray-300 rounded-full" />
+          <div className="w-10 h-1 bg-gray-600 rounded-full" />
         </div>
 
         <div className="px-4 sm:px-6 py-4">
           <div className="flex justify-between items-center mb-4">
             <h3 className="text-lg font-semibold">{task ? 'Editar Tarea' : 'Nueva Tarea'}</h3>
-            <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-lg">
+            <button onClick={onClose} className="p-2 hover:bg-gray-700 rounded-lg">
               <X size={20} />
             </button>
           </div>
@@ -135,7 +135,7 @@ export const TaskModal: React.FC<TaskModalProps> = ({
                 type="text"
                 value={title}
                 onChange={e => setTitle(e.target.value)}
-                className="w-full border rounded-lg px-3 py-2.5 text-base"
+                className="w-full border border-gray-700 rounded-lg px-3 py-2.5 text-base"
                 placeholder="Título de la tarea"
                 autoFocus
               />
@@ -145,7 +145,7 @@ export const TaskModal: React.FC<TaskModalProps> = ({
               <textarea
                 value={description}
                 onChange={e => setDescription(e.target.value)}
-                className="w-full border rounded-lg px-3 py-2.5 text-base"
+                className="w-full border border-gray-700 rounded-lg px-3 py-2.5 text-base"
                 rows={3}
                 placeholder="Descripción opcional"
               />
@@ -156,7 +156,7 @@ export const TaskModal: React.FC<TaskModalProps> = ({
                 <select
                   value={assigneeId || ''}
                   onChange={e => setAssigneeId(e.target.value || null)}
-                  className="w-full border rounded-lg px-3 py-2.5 text-base"
+                  className="w-full border border-gray-700 rounded-lg px-3 py-2.5 text-base"
                 >
                   <option value="">Sin asignar</option>
                   {teamMembers.map(m => (
@@ -178,7 +178,7 @@ export const TaskModal: React.FC<TaskModalProps> = ({
             <div className="flex flex-col-reverse sm:flex-row justify-end gap-2 pt-2 pb-4 sm:pb-0">
               <button
                 onClick={onClose}
-                className="w-full sm:w-auto px-4 py-2.5 text-gray-600 hover:bg-gray-100 rounded-lg text-base"
+                className="w-full sm:w-auto px-4 py-2.5 text-gray-400 hover:bg-gray-700 rounded-lg text-base"
               >
                 Cancelar
               </button>

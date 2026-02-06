@@ -53,11 +53,11 @@ export function SettingsPage() {
 
   return (
     <div className="max-w-2xl">
-      <h1 className="text-xl font-bold text-gray-800 mb-6">Configuración</h1>
+      <h1 className="text-xl font-bold text-gray-100 mb-6">Configuración</h1>
 
       <div className="space-y-6">
         {/* Team Members Section */}
-        <section className="bg-white rounded-lg p-4 shadow-sm">
+        <section className="bg-gray-900 rounded-lg p-4 border border-gray-800">
           <h3 className="font-medium flex items-center gap-2 mb-3">
             <Users size={18} /> Miembros del equipo
           </h3>
@@ -65,19 +65,19 @@ export function SettingsPage() {
             {teamMembers.map(member => (
               <div
                 key={member.id}
-                className="flex items-center justify-between bg-gray-50 rounded-lg px-3 py-2"
+                className="flex items-center justify-between bg-gray-800 rounded-lg px-3 py-2"
               >
                 <span className="text-sm">{member.name}</span>
                 <button
                   onClick={() => deleteTeamMember(member.id)}
-                  className="p-2 hover:bg-gray-200 rounded text-red-500"
+                  className="p-2 hover:bg-gray-600 rounded text-red-400"
                 >
                   <Trash2 size={16} />
                 </button>
               </div>
             ))}
             {teamMembers.length === 0 && (
-              <p className="text-gray-400 text-sm italic">Sin miembros</p>
+              <p className="text-gray-500 text-sm italic">Sin miembros</p>
             )}
           </div>
           <div className="flex gap-2">
@@ -86,7 +86,7 @@ export function SettingsPage() {
               value={newMemberName}
               onChange={e => setNewMemberName(e.target.value)}
               placeholder="Nombre del miembro"
-              className="flex-1 border rounded-lg px-3 py-2 text-sm"
+              className="flex-1 border border-gray-700 rounded-lg px-3 py-2 text-sm"
               onKeyDown={e => e.key === 'Enter' && handleAddMember()}
             />
             <button
@@ -99,7 +99,7 @@ export function SettingsPage() {
         </section>
 
         {/* Priorities Section */}
-        <section className="bg-white rounded-lg p-4 shadow-sm">
+        <section className="bg-gray-900 rounded-lg p-4 border border-gray-800">
           <h3 className="font-medium flex items-center gap-2 mb-3">
             <Flag size={18} /> Niveles de prioridad
           </h3>
@@ -107,7 +107,7 @@ export function SettingsPage() {
             {sortedPriorities.map(priority => (
               <div
                 key={priority.id}
-                className="flex items-center justify-between bg-gray-50 rounded-lg px-3 py-2"
+                className="flex items-center justify-between bg-gray-800 rounded-lg px-3 py-2"
               >
                 <div className="flex items-center gap-3">
                   <div
@@ -115,28 +115,28 @@ export function SettingsPage() {
                   >
                     <span className="text-xs font-bold text-white">{priority.level}</span>
                   </div>
-                  <span className="text-sm text-gray-600">{getColorLabel(priority.color)}</span>
+                  <span className="text-sm text-gray-400">{getColorLabel(priority.color)}</span>
                 </div>
                 <button
                   onClick={() => deletePriority(priority.id)}
-                  className="p-2 hover:bg-gray-200 rounded text-red-500 flex-shrink-0"
+                  className="p-2 hover:bg-gray-600 rounded text-red-400 flex-shrink-0"
                 >
                   <Trash2 size={16} />
                 </button>
               </div>
             ))}
             {priorities.length === 0 && (
-              <p className="text-gray-400 text-sm italic">Sin prioridades definidas</p>
+              <p className="text-gray-500 text-sm italic">Sin prioridades definidas</p>
             )}
           </div>
-          <div className="space-y-3 bg-gray-50 p-3 rounded-lg">
+          <div className="space-y-3 bg-gray-800 p-3 rounded-lg">
             <div className="flex gap-2">
               <div className="flex-1">
-                <label className="block text-xs text-gray-500 mb-1">Nivel (1-10)</label>
+                <label className="block text-xs text-gray-400 mb-1">Nivel (1-10)</label>
                 <select
                   value={newPriorityLevel}
                   onChange={e => setNewPriorityLevel(Number(e.target.value))}
-                  className="w-full border rounded-lg px-3 py-2 text-sm bg-white"
+                  className="w-full border border-gray-700 rounded-lg px-3 py-2 text-sm"
                 >
                   {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(level => (
                     <option
@@ -150,11 +150,11 @@ export function SettingsPage() {
                 </select>
               </div>
               <div className="flex-1">
-                <label className="block text-xs text-gray-500 mb-1">Color</label>
+                <label className="block text-xs text-gray-400 mb-1">Color</label>
                 <select
                   value={newPriorityColor}
                   onChange={e => setNewPriorityColor(e.target.value)}
-                  className="w-full border rounded-lg px-3 py-2 text-sm bg-white"
+                  className="w-full border border-gray-700 rounded-lg px-3 py-2 text-sm"
                 >
                   {PRIORITY_COLORS.map(color => (
                     <option key={color.value} value={color.value}>

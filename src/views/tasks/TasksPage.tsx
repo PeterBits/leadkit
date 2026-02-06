@@ -40,11 +40,11 @@ export function TasksPage() {
       {/* Kanban Controls */}
       <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3 mb-4 sm:mb-6">
         <div className="flex items-center gap-3">
-          <Users size={20} className="text-gray-500 hidden sm:block" />
+          <Users size={20} className="text-gray-400 hidden sm:block" />
           <select
             value={filter}
             onChange={e => setFilter(e.target.value)}
-            className="flex-1 sm:flex-none border rounded-lg px-3 py-2 text-sm"
+            className="flex-1 sm:flex-none border border-gray-700 rounded-lg px-3 py-2 text-sm"
           >
             <option value="all">Todos</option>
             {teamMembers.map(m => (
@@ -63,18 +63,18 @@ export function TasksPage() {
       </div>
 
       {/* Mobile Kanban Tabs */}
-      <div className="sm:hidden flex gap-1 mb-4 bg-gray-200 p-1 rounded-lg">
+      <div className="sm:hidden flex gap-1 mb-4 bg-gray-800 p-1 rounded-lg">
         {kanbanTabs.map(tab => (
           <button
             key={tab.status}
             onClick={() => setActiveKanbanTab(tab.status)}
             className={`flex-1 py-2 px-2 rounded-md text-sm font-medium transition-colors flex items-center justify-center gap-1 ${
-              activeKanbanTab === tab.status ? 'bg-white shadow' : 'text-gray-600'
+              activeKanbanTab === tab.status ? 'bg-gray-700 shadow' : 'text-gray-400'
             }`}
           >
             {tab.label}
             <span
-              className={`text-xs px-1.5 py-0.5 rounded-full ${activeKanbanTab === tab.status ? tab.color + ' text-white' : 'bg-gray-300'}`}
+              className={`text-xs px-1.5 py-0.5 rounded-full ${activeKanbanTab === tab.status ? tab.color + ' text-white' : 'bg-gray-600'}`}
             >
               {tab.count}
             </span>
