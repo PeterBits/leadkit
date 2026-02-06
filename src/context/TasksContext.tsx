@@ -29,13 +29,17 @@ export function TasksProvider({ children }: { children: ReactNode }) {
     load();
   }, []);
 
-  const saveTask = async (taskData: Omit<Task, 'id' | 'created_at' | 'updated_at'> & { id?: string }) => {
+  const saveTask = async (
+    taskData: Omit<Task, 'id' | 'created_at' | 'updated_at'> & { id?: string },
+  ) => {
     const now = Date.now();
     const task: Task = taskData.id
       ? { ...tasks.find(t => t.id === taskData.id)!, ...taskData, updated_at: now }
-      : { ...taskData, id: generateId(), created_at: now, updated_at: now } as Task;
+      : ({ ...taskData, id: generateId(), created_at: now, updated_at: now } as Task);
     await dbOperation('tasks', 'readwrite', store => store.put(task));
-    setTasks(prev => taskData.id ? prev.map(t => t.id === task.id ? task : t) : [...prev, task]);
+    setTasks(prev =>
+      taskData.id ? prev.map(t => (t.id === task.id ? task : t)) : [...prev, task],
+    );
   };
 
   const deleteTask = async (id: string) => {

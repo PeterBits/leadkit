@@ -8,7 +8,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({
   priorities,
   onEdit,
   onDelete,
-  onMove
+  onMove,
 }) => {
   const assignee = teamMembers.find(m => m.id === task.assignee_id);
   const priority = priorities.find(p => p.id === task.priority_id);
@@ -37,8 +37,11 @@ export const TaskCard: React.FC<TaskCardProps> = ({
             </span>
           )}
           {priority && (
-            <span className={`text-xs px-2 py-1 rounded-full bg-${priority.color} text-white font-medium flex items-center gap-1`}>
-              <span className="text-[10px]">P</span>{priority.level}
+            <span
+              className={`text-xs px-2 py-1 rounded-full bg-${priority.color} text-white font-medium flex items-center gap-1`}
+            >
+              <span className="text-[10px]">P</span>
+              {priority.level}
             </span>
           )}
         </div>

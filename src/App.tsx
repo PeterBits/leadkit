@@ -1,7 +1,10 @@
 import { Routes, Route } from 'react-router-dom';
 import {
-  DataProvider, TasksProvider,
-  PersonalTasksProvider, TeamTasksProvider, MeetingsProvider,
+  DataProvider,
+  TasksProvider,
+  PersonalTasksProvider,
+  TeamTasksProvider,
+  MeetingsProvider,
 } from './context';
 import { Layout } from './components/layout';
 import { DashboardPage, TasksPage, TeamPage, MeetingsPage, SettingsPage } from './views';

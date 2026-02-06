@@ -6,7 +6,14 @@ import { generateId } from '../../utils/ids';
 import { useDataContext } from '../../context';
 
 export function SettingsPage() {
-  const { teamMembers, priorities, saveTeamMember, deleteTeamMember, savePriority, deletePriority } = useDataContext();
+  const {
+    teamMembers,
+    priorities,
+    saveTeamMember,
+    deleteTeamMember,
+    savePriority,
+    deletePriority,
+  } = useDataContext();
 
   const [newMemberName, setNewMemberName] = useState('');
   const [newPriorityColor, setNewPriorityColor] = useState('gray-400');
@@ -103,7 +110,9 @@ export function SettingsPage() {
                 className="flex items-center justify-between bg-gray-50 rounded-lg px-3 py-2"
               >
                 <div className="flex items-center gap-3">
-                  <div className={`w-6 h-6 rounded-full flex-shrink-0 bg-${priority.color} flex items-center justify-center`}>
+                  <div
+                    className={`w-6 h-6 rounded-full flex-shrink-0 bg-${priority.color} flex items-center justify-center`}
+                  >
                     <span className="text-xs font-bold text-white">{priority.level}</span>
                   </div>
                   <span className="text-sm text-gray-600">{getColorLabel(priority.color)}</span>
@@ -130,7 +139,11 @@ export function SettingsPage() {
                   className="w-full border rounded-lg px-3 py-2 text-sm bg-white"
                 >
                   {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(level => (
-                    <option key={level} value={level} disabled={priorities.some(p => p.level === level)}>
+                    <option
+                      key={level}
+                      value={level}
+                      disabled={priorities.some(p => p.level === level)}
+                    >
                       {level} {priorities.some(p => p.level === level) ? '(usado)' : ''}
                     </option>
                   ))}

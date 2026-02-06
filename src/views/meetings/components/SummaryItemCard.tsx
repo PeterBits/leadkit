@@ -13,11 +13,12 @@ export const SummaryItemCard: React.FC<SummaryItemCardProps> = ({ item, onDelete
         <Icon size={18} className="mt-0.5 flex-shrink-0" />
         <div className="flex-1 min-w-0">
           <h4 className="font-medium text-sm">{item.title}</h4>
-          {item.description && (
-            <p className="text-sm opacity-80 mt-1">{item.description}</p>
-          )}
+          {item.description && <p className="text-sm opacity-80 mt-1">{item.description}</p>}
         </div>
-        <button onClick={() => onDelete(item.id)} className="p-1 hover:bg-white/30 rounded flex-shrink-0">
+        <button
+          onClick={() => onDelete(item.id)}
+          className="p-1 hover:bg-white/30 rounded flex-shrink-0"
+        >
           <Trash2 size={14} />
         </button>
       </div>

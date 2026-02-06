@@ -19,7 +19,7 @@ export const initDB = (): Promise<IDBDatabase> => {
     const request = indexedDB.open(DB_NAME, DB_VERSION);
     request.onerror = () => reject(request.error);
     request.onsuccess = () => resolve(request.result);
-    request.onupgradeneeded = (event) => {
+    request.onupgradeneeded = event => {
       const db = (event.target as IDBOpenDBRequest).result;
 
       // Delete old stores from previous versions
@@ -84,7 +84,7 @@ export const initDB = (): Promise<IDBDatabase> => {
 export const dbOperation = async <T>(
   storeName: string,
   mode: IDBTransactionMode,
-  operation: (store: IDBObjectStore) => IDBRequest
+  operation: (store: IDBObjectStore) => IDBRequest,
 ): Promise<T> => {
   const db = await initDB();
   return new Promise((resolve, reject) => {

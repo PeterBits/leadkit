@@ -11,7 +11,7 @@ export const KanbanColumn: React.FC<KanbanColumnProps> = ({
   color,
   onEdit,
   onDelete,
-  onMove
+  onMove,
 }) => {
   const filtered = tasks.filter(t => t.status === status);
 

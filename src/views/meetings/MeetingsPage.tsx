@@ -17,7 +17,9 @@ export function MeetingsPage() {
   useEffect(() => {
     const load = async () => {
       try {
-        const loaded = await dbOperation<SummaryItem[]>('summaries', 'readonly', store => store.getAll());
+        const loaded = await dbOperation<SummaryItem[]>('summaries', 'readonly', store =>
+          store.getAll(),
+        );
         setSummaries(loaded || []);
       } catch {
         console.log('MeetingsPage: DB init');
@@ -35,7 +37,7 @@ export function MeetingsPage() {
       title: summaryTitle,
       description: summaryDescription,
       category: summaryCategory,
-      created_at: Date.now()
+      created_at: Date.now(),
     };
     await dbOperation('summaries', 'readwrite', store => store.put(item));
     setSummaries(prev => [...prev, item]);
@@ -49,30 +51,40 @@ export function MeetingsPage() {
   };
 
   const weekDates = getWeekDates(currentWeek.week, currentWeek.year);
-  const weekSummaries = summaries.filter(s => s.week_number === currentWeek.week && s.year === currentWeek.year);
+  const weekSummaries = summaries.filter(
+    s => s.week_number === currentWeek.week && s.year === currentWeek.year,
+  );
 
   return (
     <>
       {/* Weekly Summary Header */}
       <div className="flex justify-between items-center mb-4 sm:mb-6 bg-white rounded-lg p-3 sm:p-4 shadow-sm">
         <button
-          onClick={() => setCurrentWeek(prev => {
-            const d = new Date(prev.year, 0, 1 + (prev.week - 2) * 7);
-            return getWeekNumber(d);
-          })}
+          onClick={() =>
+            setCurrentWeek(prev => {
+              const d = new Date(prev.year, 0, 1 + (prev.week - 2) * 7);
+              return getWeekNumber(d);
+            })
+          }
           className="p-2 hover:bg-gray-100 rounded-lg"
         >
           <ChevronLeft size={20} className="sm:w-6 sm:h-6" />
         </button>
         <div className="text-center">
-          <h2 className="text-base sm:text-lg font-semibold">Semana {currentWeek.week}, {currentWeek.year}</h2>
-          <p className="text-xs sm:text-sm text-gray-500">{formatDate(weekDates.start)} - {formatDate(weekDates.end)}</p>
+          <h2 className="text-base sm:text-lg font-semibold">
+            Semana {currentWeek.week}, {currentWeek.year}
+          </h2>
+          <p className="text-xs sm:text-sm text-gray-500">
+            {formatDate(weekDates.start)} - {formatDate(weekDates.end)}
+          </p>
         </div>
         <button
-          onClick={() => setCurrentWeek(prev => {
-            const d = new Date(prev.year, 0, 1 + prev.week * 7);
-            return getWeekNumber(d);
-          })}
+          onClick={() =>
+            setCurrentWeek(prev => {
+              const d = new Date(prev.year, 0, 1 + prev.week * 7);
+              return getWeekNumber(d);
+            })
+          }
           className="p-2 hover:bg-gray-100 rounded-lg"
         >
           <ChevronRight size={20} className="sm:w-6 sm:h-6" />
@@ -89,7 +101,9 @@ export function MeetingsPage() {
               className="border rounded-lg px-3 py-2 text-sm sm:w-40"
             >
               {Object.entries(CATEGORIES).map(([k, v]) => (
-                <option key={k} value={k}>{v.label}</option>
+                <option key={k} value={k}>
+                  {v.label}
+                </option>
               ))}
             </select>
             <input

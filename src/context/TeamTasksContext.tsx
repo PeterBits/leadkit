@@ -21,10 +21,18 @@ export function TeamTasksProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const load = async () => {
       try {
-        const loadedTasks = await dbOperation<TeamTask[]>('team_tasks', 'readonly', s => s.getAll());
-        const loadedSubtasks = await dbOperation<Subtask[]>('subtasks', 'readonly', s => s.getAll());
-        const loadedComments = await dbOperation<TaskComment[]>('task_comments', 'readonly', s => s.getAll());
-        const loadedEvents = await dbOperation<TimelineEvent[]>('timeline_events', 'readonly', s => s.getAll());
+        const loadedTasks = await dbOperation<TeamTask[]>('team_tasks', 'readonly', s =>
+          s.getAll(),
+        );
+        const loadedSubtasks = await dbOperation<Subtask[]>('subtasks', 'readonly', s =>
+          s.getAll(),
+        );
+        const loadedComments = await dbOperation<TaskComment[]>('task_comments', 'readonly', s =>
+          s.getAll(),
+        );
+        const loadedEvents = await dbOperation<TimelineEvent[]>('timeline_events', 'readonly', s =>
+          s.getAll(),
+        );
         setTeamTasks(loadedTasks || []);
         setSubtasks(loadedSubtasks || []);
         setTaskComments(loadedComments || []);
@@ -38,7 +46,11 @@ export function TeamTasksProvider({ children }: { children: ReactNode }) {
     load();
   }, []);
 
-  const addTimelineEvent = async (teamTaskId: string, type: TimelineEvent['type'], description: string | null) => {
+  const addTimelineEvent = async (
+    teamTaskId: string,
+    type: TimelineEvent['type'],
+    description: string | null,
+  ) => {
     const event: TimelineEvent = {
       id: generateId(),
       team_task_id: teamTaskId,
@@ -51,14 +63,16 @@ export function TeamTasksProvider({ children }: { children: ReactNode }) {
   };
 
   const saveTeamTask = async (
-    taskData: Omit<TeamTask, 'id' | 'created_at' | 'updated_at'> & { id?: string }
+    taskData: Omit<TeamTask, 'id' | 'created_at' | 'updated_at'> & { id?: string },
   ) => {
     const now = Date.now();
     const task: TeamTask = taskData.id
       ? { ...teamTasks.find(t => t.id === taskData.id)!, ...taskData, updated_at: now }
-      : { ...taskData, id: generateId(), created_at: now, updated_at: now } as TeamTask;
+      : ({ ...taskData, id: generateId(), created_at: now, updated_at: now } as TeamTask);
     await dbOperation('team_tasks', 'readwrite', store => store.put(task));
-    setTeamTasks(prev => taskData.id ? prev.map(t => t.id === task.id ? task : t) : [...prev, task]);
+    setTeamTasks(prev =>
+      taskData.id ? prev.map(t => (t.id === task.id ? task : t)) : [...prev, task],
+    );
   };
 
   const deleteTeamTask = async (id: string) => {
@@ -91,14 +105,14 @@ export function TeamTasksProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const saveSubtask = async (
-    subtaskData: Omit<Subtask, 'id' | 'created_at'> & { id?: string }
-  ) => {
+  const saveSubtask = async (subtaskData: Omit<Subtask, 'id' | 'created_at'> & { id?: string }) => {
     const sub: Subtask = subtaskData.id
       ? { ...subtasks.find(s => s.id === subtaskData.id)!, ...subtaskData }
-      : { ...subtaskData, id: generateId(), created_at: Date.now() } as Subtask;
+      : ({ ...subtaskData, id: generateId(), created_at: Date.now() } as Subtask);
     await dbOperation('subtasks', 'readwrite', store => store.put(sub));
-    setSubtasks(prev => subtaskData.id ? prev.map(s => s.id === sub.id ? sub : s) : [...prev, sub]);
+    setSubtasks(prev =>
+      subtaskData.id ? prev.map(s => (s.id === sub.id ? sub : s)) : [...prev, sub],
+    );
   };
 
   const deleteSubtask = async (id: string) => {
@@ -111,21 +125,27 @@ export function TeamTasksProvider({ children }: { children: ReactNode }) {
     if (sub) {
       const updated = { ...sub, completed: !sub.completed };
       await dbOperation('subtasks', 'readwrite', store => store.put(updated));
-      setSubtasks(prev => prev.map(s => s.id === id ? updated : s));
+      setSubtasks(prev => prev.map(s => (s.id === id ? updated : s)));
       if (updated.completed) {
-        await addTimelineEvent(sub.team_task_id, 'subtask_completed', `Subtarea "${sub.title}" completada`);
+        await addTimelineEvent(
+          sub.team_task_id,
+          'subtask_completed',
+          `Subtarea "${sub.title}" completada`,
+        );
       }
     }
   };
 
   const saveTaskComment = async (
-    commentData: Omit<TaskComment, 'id' | 'created_at'> & { id?: string }
+    commentData: Omit<TaskComment, 'id' | 'created_at'> & { id?: string },
   ) => {
     const comment: TaskComment = commentData.id
       ? { ...taskComments.find(c => c.id === commentData.id)!, ...commentData }
-      : { ...commentData, id: generateId(), created_at: Date.now() } as TaskComment;
+      : ({ ...commentData, id: generateId(), created_at: Date.now() } as TaskComment);
     await dbOperation('task_comments', 'readwrite', store => store.put(comment));
-    setTaskComments(prev => commentData.id ? prev.map(c => c.id === comment.id ? comment : c) : [...prev, comment]);
+    setTaskComments(prev =>
+      commentData.id ? prev.map(c => (c.id === comment.id ? comment : c)) : [...prev, comment],
+    );
   };
 
   const deleteTaskComment = async (id: string) => {
@@ -134,12 +154,23 @@ export function TeamTasksProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <TeamTasksContext.Provider value={{
-      teamTasks, subtasks, taskComments, timelineEvents, isLoading,
-      saveTeamTask, deleteTeamTask, moveTeamTask,
-      saveSubtask, deleteSubtask, toggleSubtask,
-      saveTaskComment, deleteTaskComment,
-    }}>
+    <TeamTasksContext.Provider
+      value={{
+        teamTasks,
+        subtasks,
+        taskComments,
+        timelineEvents,
+        isLoading,
+        saveTeamTask,
+        deleteTeamTask,
+        moveTeamTask,
+        saveSubtask,
+        deleteSubtask,
+        toggleSubtask,
+        saveTaskComment,
+        deleteTaskComment,
+      }}
+    >
       {children}
     </TeamTasksContext.Provider>
   );

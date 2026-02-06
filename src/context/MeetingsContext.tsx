@@ -19,8 +19,12 @@ export function MeetingsProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const load = async () => {
       try {
-        const loadedMeetings = await dbOperation<Meeting[]>('meetings', 'readonly', s => s.getAll());
-        const loadedTopics = await dbOperation<MeetingTopic[]>('meeting_topics', 'readonly', s => s.getAll());
+        const loadedMeetings = await dbOperation<Meeting[]>('meetings', 'readonly', s =>
+          s.getAll(),
+        );
+        const loadedTopics = await dbOperation<MeetingTopic[]>('meeting_topics', 'readonly', s =>
+          s.getAll(),
+        );
         setMeetings(loadedMeetings || []);
         setMeetingTopics(loadedTopics || []);
       } catch {
@@ -32,14 +36,14 @@ export function MeetingsProvider({ children }: { children: ReactNode }) {
     load();
   }, []);
 
-  const saveMeeting = async (
-    meetingData: Omit<Meeting, 'id' | 'created_at'> & { id?: string }
-  ) => {
+  const saveMeeting = async (meetingData: Omit<Meeting, 'id' | 'created_at'> & { id?: string }) => {
     const meeting: Meeting = meetingData.id
       ? { ...meetings.find(m => m.id === meetingData.id)!, ...meetingData }
-      : { ...meetingData, id: generateId(), created_at: Date.now() } as Meeting;
+      : ({ ...meetingData, id: generateId(), created_at: Date.now() } as Meeting);
     await dbOperation('meetings', 'readwrite', store => store.put(meeting));
-    setMeetings(prev => meetingData.id ? prev.map(m => m.id === meeting.id ? meeting : m) : [...prev, meeting]);
+    setMeetings(prev =>
+      meetingData.id ? prev.map(m => (m.id === meeting.id ? meeting : m)) : [...prev, meeting],
+    );
   };
 
   const deleteMeeting = async (id: string) => {
@@ -50,17 +54,19 @@ export function MeetingsProvider({ children }: { children: ReactNode }) {
     }
     await dbOperation('meetings', 'readwrite', store => store.delete(id));
     setMeetings(prev => prev.filter(m => m.id !== id));
-    setMeetingTopics(prev => prev.map(t => t.meeting_id === id ? { ...t, meeting_id: null } : t));
+    setMeetingTopics(prev => prev.map(t => (t.meeting_id === id ? { ...t, meeting_id: null } : t)));
   };
 
   const saveMeetingTopic = async (
-    topicData: Omit<MeetingTopic, 'id' | 'created_at'> & { id?: string }
+    topicData: Omit<MeetingTopic, 'id' | 'created_at'> & { id?: string },
   ) => {
     const topic: MeetingTopic = topicData.id
       ? { ...meetingTopics.find(t => t.id === topicData.id)!, ...topicData }
-      : { ...topicData, id: generateId(), created_at: Date.now() } as MeetingTopic;
+      : ({ ...topicData, id: generateId(), created_at: Date.now() } as MeetingTopic);
     await dbOperation('meeting_topics', 'readwrite', store => store.put(topic));
-    setMeetingTopics(prev => topicData.id ? prev.map(t => t.id === topic.id ? topic : t) : [...prev, topic]);
+    setMeetingTopics(prev =>
+      topicData.id ? prev.map(t => (t.id === topic.id ? topic : t)) : [...prev, topic],
+    );
   };
 
   const deleteMeetingTopic = async (id: string) => {
@@ -73,16 +79,23 @@ export function MeetingsProvider({ children }: { children: ReactNode }) {
     if (topic) {
       const updated = { ...topic, resolved: true, resolved_at: Date.now() };
       await dbOperation('meeting_topics', 'readwrite', store => store.put(updated));
-      setMeetingTopics(prev => prev.map(t => t.id === id ? updated : t));
+      setMeetingTopics(prev => prev.map(t => (t.id === id ? updated : t)));
     }
   };
 
   return (
-    <MeetingsContext.Provider value={{
-      meetings, meetingTopics, isLoading,
-      saveMeeting, deleteMeeting,
-      saveMeetingTopic, deleteMeetingTopic, resolveMeetingTopic,
-    }}>
+    <MeetingsContext.Provider
+      value={{
+        meetings,
+        meetingTopics,
+        isLoading,
+        saveMeeting,
+        deleteMeeting,
+        saveMeetingTopic,
+        deleteMeetingTopic,
+        resolveMeetingTopic,
+      }}
+    >
       {children}
     </MeetingsContext.Provider>
   );

@@ -32,7 +32,9 @@ export interface KanbanColumnProps {
 export interface TasksContextType {
   tasks: Task[];
   isLoading: boolean;
-  saveTask: (taskData: Omit<Task, 'id' | 'created_at' | 'updated_at'> & { id?: string }) => Promise<void>;
+  saveTask: (
+    taskData: Omit<Task, 'id' | 'created_at' | 'updated_at'> & { id?: string },
+  ) => Promise<void>;
   deleteTask: (id: string) => Promise<void>;
   moveTask: (id: string, status: Task['status']) => Promise<void>;
 }

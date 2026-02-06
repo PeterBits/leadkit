@@ -11,7 +11,10 @@ const NAV_ITEMS = [
 
 export function BottomNav() {
   return (
-    <nav className="sm:hidden fixed bottom-0 left-0 right-0 bg-white border-t z-30" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
+    <nav
+      className="sm:hidden fixed bottom-0 left-0 right-0 bg-white border-t z-30"
+      style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
+    >
       <div className="flex justify-around items-center h-16">
         {NAV_ITEMS.map(({ to, icon: Icon, label }) => (
           <NavLink

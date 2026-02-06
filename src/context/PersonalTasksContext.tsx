@@ -18,7 +18,9 @@ export function PersonalTasksProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const load = async () => {
       try {
-        const loaded = await dbOperation<PersonalTask[]>('personal_tasks', 'readonly', store => store.getAll());
+        const loaded = await dbOperation<PersonalTask[]>('personal_tasks', 'readonly', store =>
+          store.getAll(),
+        );
         setPersonalTasks(loaded || []);
       } catch {
         console.log('PersonalTasksContext: DB init');
@@ -30,14 +32,16 @@ export function PersonalTasksProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const savePersonalTask = async (
-    taskData: Omit<PersonalTask, 'id' | 'created_at' | 'updated_at'> & { id?: string }
+    taskData: Omit<PersonalTask, 'id' | 'created_at' | 'updated_at'> & { id?: string },
   ) => {
     const now = Date.now();
     const task: PersonalTask = taskData.id
       ? { ...personalTasks.find(t => t.id === taskData.id)!, ...taskData, updated_at: now }
-      : { ...taskData, id: generateId(), created_at: now, updated_at: now } as PersonalTask;
+      : ({ ...taskData, id: generateId(), created_at: now, updated_at: now } as PersonalTask);
     await dbOperation('personal_tasks', 'readwrite', store => store.put(task));
-    setPersonalTasks(prev => taskData.id ? prev.map(t => t.id === task.id ? task : t) : [...prev, task]);
+    setPersonalTasks(prev =>
+      taskData.id ? prev.map(t => (t.id === task.id ? task : t)) : [...prev, task],
+    );
   };
 
   const deletePersonalTask = async (id: string) => {
@@ -51,10 +55,15 @@ export function PersonalTasksProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <PersonalTasksContext.Provider value={{
-      personalTasks, isLoading,
-      savePersonalTask, deletePersonalTask, movePersonalTask,
-    }}>
+    <PersonalTasksContext.Provider
+      value={{
+        personalTasks,
+        isLoading,
+        savePersonalTask,
+        deletePersonalTask,
+        movePersonalTask,
+      }}
+    >
       {children}
     </PersonalTasksContext.Provider>
   );

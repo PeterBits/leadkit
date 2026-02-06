@@ -15,9 +15,24 @@ export function TasksPage() {
   const filteredTasks = filter === 'all' ? tasks : tasks.filter(t => t.assignee_id === filter);
 
   const kanbanTabs = [
-    { status: 'todo' as const, label: 'To Do', color: 'bg-gray-500', count: filteredTasks.filter(t => t.status === 'todo').length },
-    { status: 'doing' as const, label: 'Doing', color: 'bg-blue-500', count: filteredTasks.filter(t => t.status === 'doing').length },
-    { status: 'done' as const, label: 'Done', color: 'bg-green-500', count: filteredTasks.filter(t => t.status === 'done').length },
+    {
+      status: 'todo' as const,
+      label: 'To Do',
+      color: 'bg-gray-500',
+      count: filteredTasks.filter(t => t.status === 'todo').length,
+    },
+    {
+      status: 'doing' as const,
+      label: 'Doing',
+      color: 'bg-blue-500',
+      count: filteredTasks.filter(t => t.status === 'doing').length,
+    },
+    {
+      status: 'done' as const,
+      label: 'Done',
+      color: 'bg-green-500',
+      count: filteredTasks.filter(t => t.status === 'done').length,
+    },
   ];
 
   return (
@@ -33,7 +48,9 @@ export function TasksPage() {
           >
             <option value="all">Todos</option>
             {teamMembers.map(m => (
-              <option key={m.id} value={m.id}>{m.name}</option>
+              <option key={m.id} value={m.id}>
+                {m.name}
+              </option>
             ))}
           </select>
         </div>
@@ -56,7 +73,9 @@ export function TasksPage() {
             }`}
           >
             {tab.label}
-            <span className={`text-xs px-1.5 py-0.5 rounded-full ${activeKanbanTab === tab.status ? tab.color + ' text-white' : 'bg-gray-300'}`}>
+            <span
+              className={`text-xs px-1.5 py-0.5 rounded-full ${activeKanbanTab === tab.status ? tab.color + ' text-white' : 'bg-gray-300'}`}
+            >
               {tab.count}
             </span>
           </button>
@@ -81,19 +100,37 @@ export function TasksPage() {
       {/* Desktop Kanban View - Three Columns */}
       <div className="hidden sm:flex gap-4 overflow-x-auto pb-4">
         <KanbanColumn
-          title="To Do" status="todo" tasks={filteredTasks}
-          teamMembers={teamMembers} priorities={priorities} color="bg-gray-500"
-          onEdit={setModalTask} onDelete={deleteTask} onMove={moveTask}
+          title="To Do"
+          status="todo"
+          tasks={filteredTasks}
+          teamMembers={teamMembers}
+          priorities={priorities}
+          color="bg-gray-500"
+          onEdit={setModalTask}
+          onDelete={deleteTask}
+          onMove={moveTask}
         />
         <KanbanColumn
-          title="Doing" status="doing" tasks={filteredTasks}
-          teamMembers={teamMembers} priorities={priorities} color="bg-blue-500"
-          onEdit={setModalTask} onDelete={deleteTask} onMove={moveTask}
+          title="Doing"
+          status="doing"
+          tasks={filteredTasks}
+          teamMembers={teamMembers}
+          priorities={priorities}
+          color="bg-blue-500"
+          onEdit={setModalTask}
+          onDelete={deleteTask}
+          onMove={moveTask}
         />
         <KanbanColumn
-          title="Done" status="done" tasks={filteredTasks}
-          teamMembers={teamMembers} priorities={priorities} color="bg-green-500"
-          onEdit={setModalTask} onDelete={deleteTask} onMove={moveTask}
+          title="Done"
+          status="done"
+          tasks={filteredTasks}
+          teamMembers={teamMembers}
+          priorities={priorities}
+          color="bg-green-500"
+          onEdit={setModalTask}
+          onDelete={deleteTask}
+          onMove={moveTask}
         />
       </div>
 

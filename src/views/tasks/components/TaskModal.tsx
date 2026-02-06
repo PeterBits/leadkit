@@ -27,7 +27,9 @@ const PrioritySelector: React.FC<PrioritySelectorProps> = ({ priorities, value, 
       >
         {selected ? (
           <span className="flex items-center gap-2">
-            <span className={`w-5 h-5 rounded-full bg-${selected.color} flex items-center justify-center`}>
+            <span
+              className={`w-5 h-5 rounded-full bg-${selected.color} flex items-center justify-center`}
+            >
               <span className="text-[10px] font-bold text-white">{selected.level}</span>
             </span>
             <span>Nivel {selected.level}</span>
@@ -35,14 +37,20 @@ const PrioritySelector: React.FC<PrioritySelectorProps> = ({ priorities, value, 
         ) : (
           <span className="text-gray-500">Sin prioridad</span>
         )}
-        <ChevronDown size={18} className={`text-gray-400 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+        <ChevronDown
+          size={18}
+          className={`text-gray-400 transition-transform ${isOpen ? 'rotate-180' : ''}`}
+        />
       </button>
 
       {isOpen && (
         <div className="absolute z-10 w-full mt-1 bg-white border rounded-lg shadow-lg max-h-60 overflow-y-auto">
           <button
             type="button"
-            onClick={() => { onChange(null); setIsOpen(false); }}
+            onClick={() => {
+              onChange(null);
+              setIsOpen(false);
+            }}
             className={`w-full px-3 py-2 text-left hover:bg-gray-50 flex items-center gap-2 ${!value ? 'bg-blue-50' : ''}`}
           >
             <span className="w-5 h-5 rounded-full bg-gray-200 flex items-center justify-center">
@@ -54,10 +62,15 @@ const PrioritySelector: React.FC<PrioritySelectorProps> = ({ priorities, value, 
             <button
               key={p.id}
               type="button"
-              onClick={() => { onChange(p.id); setIsOpen(false); }}
+              onClick={() => {
+                onChange(p.id);
+                setIsOpen(false);
+              }}
               className={`w-full px-3 py-2 text-left hover:bg-gray-50 flex items-center gap-2 ${value === p.id ? 'bg-blue-50' : ''}`}
             >
-              <span className={`w-5 h-5 rounded-full bg-${p.color} flex items-center justify-center`}>
+              <span
+                className={`w-5 h-5 rounded-full bg-${p.color} flex items-center justify-center`}
+              >
                 <span className="text-[10px] font-bold text-white">{p.level}</span>
               </span>
               <span>Nivel {p.level}</span>
@@ -74,22 +87,32 @@ export const TaskModal: React.FC<TaskModalProps> = ({
   teamMembers,
   priorities,
   onSave,
-  onClose
+  onClose,
 }) => {
   const [title, setTitle] = useState(task?.title || '');
   const [description, setDescription] = useState(task?.description || '');
   const [assigneeId, setAssigneeId] = useState<string | null>(task?.assignee_id || null);
-  const [status] = useState(task?.status || 'todo' as Task['status']);
+  const [status] = useState(task?.status || ('todo' as Task['status']));
   const [priorityId, setPriorityId] = useState<string | null>(task?.priority_id || null);
 
   const handleSubmit = () => {
     if (!title.trim()) return;
-    onSave({ title, description, assignee_id: assigneeId, status, priority_id: priorityId, id: task?.id });
+    onSave({
+      title,
+      description,
+      assignee_id: assigneeId,
+      status,
+      priority_id: priorityId,
+      id: task?.id,
+    });
     onClose();
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-50 p-0 sm:p-4" onClick={onClose}>
+    <div
+      className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-50 p-0 sm:p-4"
+      onClick={onClose}
+    >
       <div
         className="bg-white w-full sm:rounded-lg sm:max-w-md max-h-[90vh] overflow-y-auto rounded-t-2xl"
         onClick={e => e.stopPropagation()}
@@ -137,7 +160,9 @@ export const TaskModal: React.FC<TaskModalProps> = ({
                 >
                   <option value="">Sin asignar</option>
                   {teamMembers.map(m => (
-                    <option key={m.id} value={m.id}>{m.name}</option>
+                    <option key={m.id} value={m.id}>
+                      {m.name}
+                    </option>
                   ))}
                 </select>
               </div>

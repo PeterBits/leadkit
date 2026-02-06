@@ -5,10 +5,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Build & Development Commands
 
 ```bash
-npm run dev      # Dev server at localhost:5173
-npm run build    # TypeScript check + Vite production build (generates PWA assets)
-npm run preview  # Preview production build
-npm run lint     # ESLint
+npm run dev          # Dev server at localhost:5173
+npm run build        # TypeScript check + Vite production build (generates PWA assets)
+npm run preview      # Preview production build
+npm run lint         # ESLint
+npm run format       # Format all source files with Prettier
+npm run format:check # Check formatting without writing
 ```
 
 No test framework is configured.
