@@ -116,27 +116,44 @@ leadkit/
 │   │       ├── BottomNav.tsx           # Navegación móvil (tab bar inferior)
 │   │       └── index.ts
 │   ├── context/
-│   │   ├── DataContext.tsx             # Estado global: teamMembers, priorities
-│   │   ├── TasksContext.tsx            # Estado global: tasks
+│   │   ├── DataContext.tsx             # teamMembers, priorities, categories
+│   │   ├── PersonalTasksContext.tsx    # personalTasks
+│   │   ├── TeamTasksContext.tsx        # teamTasks, subtasks, comments, timeline
+│   │   ├── MeetingsContext.tsx         # meetings, meetingTopics
+│   │   ├── TasksContext.tsx            # (deprecated, se eliminará en Fase 2)
 │   │   └── index.ts
 │   ├── constants/                      # Constantes fragmentadas por entidad
 │   │   ├── priority.ts                # PRIORITY_COLORS
-│   │   ├── summary-item.ts            # CATEGORIES
+│   │   ├── category.ts               # DEFAULT_CATEGORY_COLORS
+│   │   ├── team-task.ts              # PROGRESS_MODES, TEAM_TASK_STATUSES
+│   │   ├── timeline-event.ts         # TIMELINE_EVENT_TYPES
+│   │   ├── summary-item.ts           # (deprecated)
 │   │   └── index.ts
 │   ├── services/
-│   │   └── database.ts                # Operaciones IndexedDB
+│   │   └── database.ts                # Operaciones IndexedDB (v4, 10 stores)
 │   ├── types/                          # Sistema de tipos por entidad
 │   │   ├── entities/                   # Interfaces de datos
-│   │   │   ├── task.ts
-│   │   │   ├── summary-item.ts
+│   │   │   ├── category.ts
+│   │   │   ├── personal-task.ts
+│   │   │   ├── team-task.ts
+│   │   │   ├── subtask.ts
+│   │   │   ├── task-comment.ts
+│   │   │   ├── timeline-event.ts
+│   │   │   ├── meeting.ts
+│   │   │   ├── meeting-topic.ts
 │   │   │   ├── team-member.ts
 │   │   │   ├── priority.ts
+│   │   │   ├── task.ts               # (deprecated)
+│   │   │   ├── summary-item.ts       # (deprecated)
 │   │   │   └── index.ts
 │   │   ├── interfaces/                 # Props de componentes y contextos
-│   │   │   ├── task.ts
-│   │   │   ├── summary-item.ts
+│   │   │   ├── personal-task.ts
+│   │   │   ├── team-task.ts
+│   │   │   ├── meeting.ts
 │   │   │   ├── priority.ts
 │   │   │   ├── context.ts
+│   │   │   ├── task.ts               # (deprecated)
+│   │   │   ├── summary-item.ts       # (deprecated)
 │   │   │   └── index.ts
 │   │   └── index.ts
 │   ├── utils/
@@ -181,33 +198,14 @@ La aplicación usa **React Router v6** con las siguientes rutas:
 
 ### Gestión de Estado
 
-Dos React Contexts para datos compartidos, estado local por página para el resto:
+5 React Contexts organizados por dominio:
 
-```
-┌─────────────────────────────────────────────────┐
-│                    App.tsx                        │
-│  ┌─────────────┐  ┌──────────────┐               │
-│  │ DataProvider │  │ TasksProvider│               │
-│  │ teamMembers │  │ tasks[]      │               │
-│  │ priorities  │  │ CRUD handlers│               │
-│  └──────┬──────┘  └──────┬───────┘               │
-│         │                │                        │
-│         ▼                ▼                        │
-│  ┌────────────────────────────────────────────┐  │
-│  │              Pages (local state)            │  │
-│  │  TasksPage: modalTask, filter, tabs         │  │
-│  │  MeetingsPage: summaries, currentWeek, form │  │
-│  │  SettingsPage: form inputs                  │  │
-│  └────────────────────────────────────────────┘  │
-│         │                                         │
-│         ▼                                         │
-│  ┌────────────────────────────────────────────┐  │
-│  │              IndexedDB Service              │  │
-│  │  Stores: tasks, summaries, teamMembers,     │  │
-│  │          priorities                          │  │
-│  └────────────────────────────────────────────┘  │
-└─────────────────────────────────────────────────┘
-```
+| Contexto | Datos | Stores IndexedDB |
+|---|---|---|
+| **DataContext** | teamMembers, priorities, categories | team_members, priorities, categories |
+| **PersonalTasksContext** | personalTasks | personal_tasks |
+| **TeamTasksContext** | teamTasks, subtasks, taskComments, timelineEvents | team_tasks, subtasks, task_comments, timeline_events |
+| **MeetingsContext** | meetings, meetingTopics | meetings, meeting_topics |
 
 ### Flujo de Datos
 
@@ -220,66 +218,69 @@ Dos React Contexts para datos compartidos, estado local por página para el rest
 
 ## Modelos de Datos
 
-### TeamMember (Miembro del equipo)
+### Datos de referencia
 
+#### TeamMember
 ```typescript
-interface TeamMember {
-  id: string;           // ID único generado
-  name: string;         // Nombre del miembro
-  createdAt: number;    // Timestamp de creación
-}
+{ id, name, created_at }
 ```
 
-### Priority (Prioridad)
-
+#### Priority
 ```typescript
-interface Priority {
-  id: string;           // ID único generado
-  color: string;        // Color Tailwind (ej: "red-400", "yellow-400")
-  level: number;        // Nivel de 1 a 10 (1 = máxima prioridad)
-  createdAt: number;    // Timestamp de creación
-}
+{ id, color, level, created_at }
+```
+> Nivel único (1-10). Se muestra como "P1", "P2", etc. con el color de fondo.
+
+#### Category
+```typescript
+{ id, name, color, created_at }
+```
+> Categorías personalizables para clasificar tareas personales.
+
+### Tareas personales
+
+#### PersonalTask
+```typescript
+{ id, title, description, status, priority_id, category_id, created_at, updated_at }
+```
+> Tareas propias del tech lead. Sin asignado (siempre del lead).
+
+### Tareas de equipo
+
+#### TeamTask
+```typescript
+{ id, title, description, assignee_id, status, priority_id, jira_ref, start_date, deadline, progress_mode, manual_progress, created_at, updated_at }
+```
+> `progress_mode`: `'auto'` (calculado por subtareas) o `'manual'` (porcentaje directo).
+
+#### Subtask
+```typescript
+{ id, team_task_id, title, completed, order, created_at }
 ```
 
-> **Nota:** Las prioridades solo tienen nivel y color. El nivel es único (no puede haber dos prioridades con el mismo nivel). En las tarjetas se muestra como "P1", "P2", etc. con el color de fondo correspondiente.
-
-### Task (Tarea)
-
+#### TaskComment
 ```typescript
-interface Task {
-  id: string;                           // ID único generado
-  title: string;                        // Título de la tarea (requerido)
-  description: string;                  // Descripción opcional
-  assigneeId: string | null;            // ID del miembro asignado
-  status: "todo" | "doing" | "done";    // Estado en el Kanban
-  priorityId: string | null;            // ID de la prioridad
-  createdAt: number;                    // Timestamp de creación
-  updatedAt: number;                    // Timestamp de última modificación
-}
+{ id, team_task_id, content, created_at }
 ```
 
-### SummaryItem (Ítem de Resumen Semanal)
-
+#### TimelineEvent
 ```typescript
-interface SummaryItem {
-  id: string;           // ID único generado
-  weekNumber: number;   // Número de semana ISO (1-53)
-  year: number;         // Año (ej: 2025)
-  title: string;        // Título del ítem (requerido)
-  description: string;  // Descripción detallada (opcional)
-  category: "discussion" | "blocker" | "achievement" | "action-item";
-  createdAt: number;    // Timestamp de creación
-}
+{ id, team_task_id, type, description, created_at }
+```
+> `type`: `'started'` | `'blocked'` | `'unblocked'` | `'subtask_completed'` | `'completed'` | `'status_change'`
+
+### Reuniones
+
+#### Meeting
+```typescript
+{ id, date, notes, leader_feedback, created_at }
 ```
 
-### Categorías de Resumen
-
-| Key           | Label       | Color   | Uso                           |
-| ------------- | ----------- | ------- | ----------------------------- |
-| `discussion`  | A discutir  | Azul    | Temas para tratar en reunión  |
-| `blocker`     | Blocker     | Rojo    | Impedimentos del equipo       |
-| `achievement` | Logro       | Verde   | Wins y éxitos de la semana    |
-| `action-item` | Action Item | Púrpura | Tareas derivadas de reuniones |
+#### MeetingTopic
+```typescript
+{ id, meeting_id, title, description, resolved, resolved_at, created_at }
+```
+> `meeting_id` nullable: permite temas sin reunión asignada.
 
 ### Colores disponibles para prioridades
 
@@ -302,47 +303,33 @@ interface SummaryItem {
 
 ```typescript
 const DB_NAME = "FrontendTeamDB";
-const DB_VERSION = 2;
+const DB_VERSION = 4;
 ```
 
-### Object Stores
+### Object Stores (10)
 
-#### `tasks`
-
-- **keyPath:** `id`
-- **Índices:**
-  - `status` → Para filtrar por columna
-  - `assigneeId` → Para filtrar por miembro
-
-#### `summaries`
-
-- **keyPath:** `id`
-- **Índices:**
-  - `week` → Índice compuesto `[year, weekNumber]`
-
-#### `teamMembers`
-
-- **keyPath:** `id`
-
-#### `priorities`
-
-- **keyPath:** `id`
-- **Índices:**
-  - `level` → Para ordenar por nivel de prioridad
+| Store | keyPath | Índices |
+|---|---|---|
+| `team_members` | `id` | — |
+| `priorities` | `id` | `level` |
+| `categories` | `id` | — |
+| `personal_tasks` | `id` | `status`, `category_id` |
+| `team_tasks` | `id` | `assignee_id`, `status` |
+| `subtasks` | `id` | `team_task_id` |
+| `task_comments` | `id` | `team_task_id` |
+| `timeline_events` | `id` | `team_task_id` |
+| `meetings` | `id` | `date` |
+| `meeting_topics` | `id` | `meeting_id`, `resolved` |
 
 ### Operaciones
 
 ```typescript
 // Función genérica para operaciones
-const dbOperation = async <T>(
-  storeName: string,
-  mode: IDBTransactionMode,
-  operation: (store: IDBObjectStore) => IDBRequest
-): Promise<T>
+const dbOperation = async <T>(storeName, mode, operation): Promise<T>
 
 // Ejemplos de uso:
-await dbOperation('tasks', 'readonly', store => store.getAll());
-await dbOperation('teamMembers', 'readwrite', store => store.put(member));
+await dbOperation('team_members', 'readonly', store => store.getAll());
+await dbOperation('personal_tasks', 'readwrite', store => store.put(task));
 await dbOperation('priorities', 'readwrite', store => store.delete(id));
 ```
 
@@ -456,31 +443,17 @@ Las prioridades se gestionan desde `/settings`. Cada prioridad tiene:
 - **Nivel:** Del 1 al 10 (1 = máxima prioridad)
 - **Color:** Seleccionable de 8 opciones
 
-### Añadir nueva categoría de resumen
+### Añadir campo a PersonalTask
 
-```typescript
-// En src/constants/summary-item.ts
-import { MessageCircle } from 'lucide-react';
+1. Actualizar interface en `src/types/entities/personal-task.ts`
+2. Actualizar vista y componentes en `src/views/tasks/`
+3. Considerar migración de IndexedDB si hay datos existentes
 
-export const CATEGORIES = {
-  // ... existentes
-  feedback: {
-    label: "Feedback",
-    icon: MessageCircle,
-    color: "bg-orange-100 text-orange-700",
-  },
-};
+### Añadir campo a TeamTask
 
-// En src/types/entities/summary-item.ts - actualizar el tipo SummaryItem.category
-category: "discussion" | "blocker" | "achievement" | "action-item" | "feedback";
-```
-
-### Añadir campo a Task
-
-1. Actualizar interface `Task` en `src/types/entities/task.ts`
-2. Actualizar `TaskModal` en `src/views/tasks/components/TaskModal.tsx`
-3. Actualizar `TaskCard` en `src/views/tasks/components/TaskCard.tsx` si debe mostrarse
-4. Considerar migración de IndexedDB si hay datos existentes
+1. Actualizar interface en `src/types/entities/team-task.ts`
+2. Actualizar vista y componentes en `src/views/team/`
+3. Considerar migración de IndexedDB si hay datos existentes
 
 ### Añadir nueva ruta/página
 
@@ -519,9 +492,9 @@ export const PRIORITY_COLORS = [
 
 - [ ] Estadísticas del equipo (tareas completadas por persona/semana)
 - [ ] Etiquetas/tags personalizables
-- [ ] Subtareas (checklist dentro de tarea)
-- [ ] Comentarios en tareas
-- [ ] Historial de cambios
+- [x] Subtareas (checklist dentro de tarea) — modelo de datos creado
+- [x] Comentarios en tareas — modelo de datos creado
+- [x] Historial de cambios (timeline events) — modelo de datos creado
 - [ ] Edición de miembros y prioridades existentes
 
 ### Prioridad Baja
@@ -560,11 +533,12 @@ export const PRIORITY_COLORS = [
 
 ### Puntos de extensión comunes
 
-1. Añadir campos a tareas → modificar `types/entities/task.ts` + `views/tasks/components/TaskModal` + `TaskCard`
-2. Nuevas páginas → crear carpeta en `views/` + añadir Route en `App.tsx` + nav items
-3. Nuevas categorías → modificar `constants/summary-item.ts` + `types/entities/summary-item.ts`
-4. Nuevos colores → modificar `constants/priority.ts` + `tailwind.config.js` safelist
-5. Cambios en DB → incrementar `DB_VERSION` + handle `onupgradeneeded`
+1. Añadir campos a tareas personales → modificar `types/entities/personal-task.ts` + vista `views/tasks/`
+2. Añadir campos a tareas de equipo → modificar `types/entities/team-task.ts` + vista `views/team/`
+3. Nuevas páginas → crear carpeta en `views/` + añadir Route en `App.tsx` + nav items
+4. Nuevas categorías → modificar `constants/category.ts` + `types/entities/category.ts`
+5. Nuevos colores → modificar `constants/priority.ts` + `tailwind.config.js` safelist
+6. Cambios en DB → incrementar `DB_VERSION` + handle `onupgradeneeded`
 
 ---
 

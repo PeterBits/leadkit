@@ -30,17 +30,19 @@ All routes render inside `Layout` which provides persistent navigation (Sidebar 
 
 ### State Management
 
-Two React Contexts for shared data, local state per page:
+5 React Contexts organized by domain:
 
-- **DataContext** (`context/DataContext.tsx`): `teamMembers`, `priorities` + their CRUD handlers. Consumed by TasksPage, SettingsPage, DashboardPage, TeamPage.
-- **TasksContext** (`context/TasksContext.tsx`): `tasks` + `saveTask`, `deleteTask`, `moveTask`. Consumed by TasksPage, DashboardPage.
-- **Page-local state**: `summaries` in MeetingsPage, `modalTask`/`filter`/`activeKanbanTab` in TasksPage, form inputs in SettingsPage.
+- **DataContext** (`context/DataContext.tsx`): `teamMembers`, `priorities`, `categories` + their CRUD handlers. Reference data shared across the app.
+- **PersonalTasksContext** (`context/PersonalTasksContext.tsx`): `personalTasks` + save/delete/move. Tech lead's own tasks.
+- **TeamTasksContext** (`context/TeamTasksContext.tsx`): `teamTasks`, `subtasks`, `taskComments`, `timelineEvents` + full CRUD. Includes cascade delete and automatic timeline events.
+- **MeetingsContext** (`context/MeetingsContext.tsx`): `meetings`, `meetingTopics` + CRUD. Includes topic resolution and unlink-on-delete.
+- **~~TasksContext~~** (deprecated, will be removed in Phase 2): Legacy `tasks` context, kept temporarily for backward compatibility.
 
 Each CRUD operation writes to IndexedDB first, then updates React state.
 
 ### Data Layer
 
-`services/database.ts` exposes a generic `dbOperation<T>(storeName, mode, operation)` wrapper around IndexedDB. The DB (`FrontendTeamDB`, version 2) has 4 object stores: `tasks`, `summaries`, `teamMembers`, `priorities`. To add a new store or index, increment `DB_VERSION` and handle it in `onupgradeneeded`.
+`services/database.ts` exposes a generic `dbOperation<T>(storeName, mode, operation)` wrapper and a `STORE_NAMES` constant. The DB (`FrontendTeamDB`, version 4) has 10 object stores: `team_members`, `priorities`, `categories`, `personal_tasks`, `team_tasks`, `subtasks`, `task_comments`, `timeline_events`, `meetings`, `meeting_topics`. To add a new store or index, increment `DB_VERSION` and handle it in `onupgradeneeded`.
 
 ### Component & View Organization
 
@@ -51,10 +53,10 @@ Each CRUD operation writes to IndexedDB first, then updates React state.
   - `views/team/` - TeamPage
   - `views/settings/` - SettingsPage
 - `components/layout/` - Layout, Sidebar, BottomNav (persistent navigation shell, shared across all views)
-- `context/` - DataContext + TasksContext
-- `constants/` - Split by entity: `priority.ts`, `summary-item.ts`
+- `context/` - DataContext, PersonalTasksContext, TeamTasksContext, MeetingsContext (+ deprecated TasksContext)
+- `constants/` - Split by entity: `priority.ts`, `category.ts`, `team-task.ts`, `timeline-event.ts`, `summary-item.ts` (deprecated)
 - `types/` - Split by entity:
-  - `types/entities/` - One file per entity (task, priority, team-member, summary-item)
+  - `types/entities/` - One file per entity (category, personal-task, team-task, subtask, task-comment, timeline-event, meeting, meeting-topic, team-member, priority + deprecated: task, summary-item)
   - `types/interfaces/` - Component/context props organized by entity
 - Each folder has a barrel `index.ts`
 
@@ -71,7 +73,7 @@ Priority colors are applied dynamically (e.g., `` bg-${priority.color} ``, `` bo
 ### Types
 
 Entity-based type system split across two subdirectories:
-- `types/entities/` - Data model interfaces (`Task`, `SummaryItem`, `TeamMember`, `Priority`)
+- `types/entities/` - Data model interfaces: `Category`, `PersonalTask`, `TeamTask`, `Subtask`, `TaskComment`, `TimelineEvent`, `Meeting`, `MeetingTopic`, `TeamMember`, `Priority` (+ deprecated `Task`, `SummaryItem`)
 - `types/interfaces/` - Component props and context types, organized by entity
 - No inline interfaces in components or services — all declared in `types/`
 

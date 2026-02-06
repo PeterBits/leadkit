@@ -44,9 +44,9 @@
 
 ## 0.4 Migración de IndexedDB
 
-- [ ] Incrementar `DB_VERSION` (de 2 a 3)
-- [ ] Añadir nuevos object stores (ver Fase 1)
-- [ ] Migrar los datos existentes de `tasks` → `personal_tasks`
-- [ ] Migrar `summaries` → se mantendrá o transformará según la nueva sección de reuniones
+- [x] Incrementar `DB_VERSION` (de 3 a 4)
+- [x] Añadir nuevos object stores (ver Fase 1)
+- [x] Eliminar stores antiguos (`tasks`, `summaries`, `teamMembers`)
+- [x] Renombrar `teamMembers` → `team_members`
 
-> **Nota:** La sub-fase 0.4 se difiere a después de la Fase 1, ya que depende de los nuevos modelos de datos.
+> **Nota:** Se completó junto con la Fase 1, ya que dependía de los nuevos modelos de datos.
