@@ -1,5 +1,5 @@
 const DB_NAME = 'FrontendTeamDB';
-const DB_VERSION = 2;
+const DB_VERSION = 3;
 
 export const initDB = (): Promise<IDBDatabase> => {
   return new Promise((resolve, reject) => {
@@ -12,12 +12,12 @@ export const initDB = (): Promise<IDBDatabase> => {
       if (!db.objectStoreNames.contains('tasks')) {
         const taskStore = db.createObjectStore('tasks', { keyPath: 'id' });
         taskStore.createIndex('status', 'status');
-        taskStore.createIndex('assigneeId', 'assigneeId');
+        taskStore.createIndex('assignee_id', 'assignee_id');
       }
 
       if (!db.objectStoreNames.contains('summaries')) {
         const summaryStore = db.createObjectStore('summaries', { keyPath: 'id' });
-        summaryStore.createIndex('week', ['year', 'weekNumber']);
+        summaryStore.createIndex('week', ['year', 'week_number']);
       }
 
       if (!db.objectStoreNames.contains('teamMembers')) {

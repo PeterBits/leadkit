@@ -30,12 +30,12 @@ export function MeetingsPage() {
     if (!summaryTitle.trim()) return;
     const item: SummaryItem = {
       id: generateId(),
-      weekNumber: currentWeek.week,
+      week_number: currentWeek.week,
       year: currentWeek.year,
       title: summaryTitle,
       description: summaryDescription,
       category: summaryCategory,
-      createdAt: Date.now()
+      created_at: Date.now()
     };
     await dbOperation('summaries', 'readwrite', store => store.put(item));
     setSummaries(prev => [...prev, item]);
@@ -49,7 +49,7 @@ export function MeetingsPage() {
   };
 
   const weekDates = getWeekDates(currentWeek.week, currentWeek.year);
-  const weekSummaries = summaries.filter(s => s.weekNumber === currentWeek.week && s.year === currentWeek.year);
+  const weekSummaries = summaries.filter(s => s.week_number === currentWeek.week && s.year === currentWeek.year);
 
   return (
     <>

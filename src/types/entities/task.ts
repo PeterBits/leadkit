@@ -2,9 +2,9 @@ export interface Task {
   id: string;
   title: string;
   description: string;
-  assigneeId: string | null;
+  assignee_id: string | null;
   status: 'todo' | 'doing' | 'done';
-  priorityId: string | null;
-  createdAt: number;
-  updatedAt: number;
+  priority_id: string | null;
+  created_at: number;
+  updated_at: number;
 }

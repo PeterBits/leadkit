@@ -17,7 +17,7 @@ export function SettingsPage() {
     const member: TeamMember = {
       id: generateId(),
       name: newMemberName.trim(),
-      createdAt: Date.now(),
+      created_at: Date.now(),
     };
     saveTeamMember(member);
     setNewMemberName('');
@@ -32,7 +32,7 @@ export function SettingsPage() {
       id: generateId(),
       color: newPriorityColor,
       level: newPriorityLevel,
-      createdAt: Date.now(),
+      created_at: Date.now(),
     };
     savePriority(priority);
     setNewPriorityColor('gray-400');

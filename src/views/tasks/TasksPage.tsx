@@ -12,7 +12,7 @@ export function TasksPage() {
   const [filter, setFilter] = useState<string>('all');
   const [activeKanbanTab, setActiveKanbanTab] = useState<Task['status']>('todo');
 
-  const filteredTasks = filter === 'all' ? tasks : tasks.filter(t => t.assigneeId === filter);
+  const filteredTasks = filter === 'all' ? tasks : tasks.filter(t => t.assignee_id === filter);
 
   const kanbanTabs = [
     { status: 'todo' as const, label: 'To Do', color: 'bg-gray-500', count: filteredTasks.filter(t => t.status === 'todo').length },

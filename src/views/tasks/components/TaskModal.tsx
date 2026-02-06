@@ -78,13 +78,13 @@ export const TaskModal: React.FC<TaskModalProps> = ({
 }) => {
   const [title, setTitle] = useState(task?.title || '');
   const [description, setDescription] = useState(task?.description || '');
-  const [assigneeId, setAssigneeId] = useState<string | null>(task?.assigneeId || null);
+  const [assigneeId, setAssigneeId] = useState<string | null>(task?.assignee_id || null);
   const [status] = useState(task?.status || 'todo' as Task['status']);
-  const [priorityId, setPriorityId] = useState<string | null>(task?.priorityId || null);
+  const [priorityId, setPriorityId] = useState<string | null>(task?.priority_id || null);
 
   const handleSubmit = () => {
     if (!title.trim()) return;
-    onSave({ title, description, assigneeId, status, priorityId, id: task?.id });
+    onSave({ title, description, assignee_id: assigneeId, status, priority_id: priorityId, id: task?.id });
     onClose();
   };
 

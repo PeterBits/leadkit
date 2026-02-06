@@ -33,7 +33,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const saveTeamMember = async (member: TeamMember) => {
-    const newMember = member.id ? member : { ...member, id: generateId(), createdAt: Date.now() };
+    const newMember = member.id ? member : { ...member, id: generateId(), created_at: Date.now() };
     await dbOperation('teamMembers', 'readwrite', store => store.put(newMember));
     setTeamMembers(prev => [...prev, newMember]);
   };
@@ -44,7 +44,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
   };
 
   const savePriority = async (priority: Priority) => {
-    const newPriority = priority.id ? priority : { ...priority, id: generateId(), createdAt: Date.now() };
+    const newPriority = priority.id ? priority : { ...priority, id: generateId(), created_at: Date.now() };
     await dbOperation('priorities', 'readwrite', store => store.put(newPriority));
     setPriorities(prev => [...prev, newPriority]);
   };

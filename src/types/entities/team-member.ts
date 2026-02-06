@@ -1,5 +1,5 @@
 export interface TeamMember {
   id: string;
   name: string;
-  createdAt: number;
+  created_at: number;
 }

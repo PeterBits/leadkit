@@ -10,8 +10,8 @@ export const TaskCard: React.FC<TaskCardProps> = ({
   onDelete,
   onMove
 }) => {
-  const assignee = teamMembers.find(m => m.id === task.assigneeId);
-  const priority = priorities.find(p => p.id === task.priorityId);
+  const assignee = teamMembers.find(m => m.id === task.assignee_id);
+  const priority = priorities.find(p => p.id === task.priority_id);
   const borderColor = priority ? `border-l-${priority.color}` : 'border-l-gray-300';
 
   return (

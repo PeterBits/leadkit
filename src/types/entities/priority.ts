@@ -2,5 +2,5 @@ export interface Priority {
   id: string;
   color: string;
   level: number;
-  createdAt: number;
+  created_at: number;
 }

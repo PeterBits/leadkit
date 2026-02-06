@@ -13,7 +13,7 @@ export interface TaskModalProps {
   task: Task | null;
   teamMembers: TeamMember[];
   priorities: Priority[];
-  onSave: (task: Omit<Task, 'id' | 'createdAt' | 'updatedAt'> & { id?: string }) => void;
+  onSave: (task: Omit<Task, 'id' | 'created_at' | 'updated_at'> & { id?: string }) => void;
   onClose: () => void;
 }
 
@@ -32,7 +32,7 @@ export interface KanbanColumnProps {
 export interface TasksContextType {
   tasks: Task[];
   isLoading: boolean;
-  saveTask: (taskData: Omit<Task, 'id' | 'createdAt' | 'updatedAt'> & { id?: string }) => Promise<void>;
+  saveTask: (taskData: Omit<Task, 'id' | 'created_at' | 'updated_at'> & { id?: string }) => Promise<void>;
   deleteTask: (id: string) => Promise<void>;
   moveTask: (id: string, status: Task['status']) => Promise<void>;
 }
