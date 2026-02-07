@@ -1,5 +1,5 @@
 const DB_NAME = 'FrontendTeamDB';
-const DB_VERSION = 4;
+const DB_VERSION = 5;
 
 export const STORE_NAMES = {
   TEAM_MEMBERS: 'team_members',
@@ -12,6 +12,7 @@ export const STORE_NAMES = {
   TIMELINE_EVENTS: 'timeline_events',
   MEETINGS: 'meetings',
   MEETING_TOPICS: 'meeting_topics',
+  MEETING_SNAPSHOTS: 'meeting_snapshots',
 } as const;
 
 export const initDB = (): Promise<IDBDatabase> => {
@@ -76,6 +77,11 @@ export const initDB = (): Promise<IDBDatabase> => {
         const mtStore = db.createObjectStore('meeting_topics', { keyPath: 'id' });
         mtStore.createIndex('meeting_id', 'meeting_id');
         mtStore.createIndex('resolved', 'resolved');
+      }
+
+      if (!db.objectStoreNames.contains('meeting_snapshots')) {
+        const msStore = db.createObjectStore('meeting_snapshots', { keyPath: 'id' });
+        msStore.createIndex('meeting_id', 'meeting_id');
       }
     };
   });

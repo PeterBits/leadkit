@@ -100,9 +100,16 @@ leadkit/
 │   │   │       ├── TaskModal.tsx
 │   │   │       └── index.ts
 │   │   ├── meetings/
-│   │   │   ├── MeetingsPage.tsx        # Resúmenes semanales
+│   │   │   ├── MeetingsPage.tsx        # Reuniones con el Leader
 │   │   │   └── components/             # Componentes exclusivos de meetings
-│   │   │       ├── SummaryItemCard.tsx
+│   │   │       ├── CreateMeetingModal.tsx
+│   │   │       ├── MeetingListItem.tsx
+│   │   │       ├── MeetingModal.tsx
+│   │   │       ├── TeamStatusSection.tsx
+│   │   │       ├── MemberSnapshotCard.tsx
+│   │   │       ├── TopicsSection.tsx
+│   │   │       ├── FeedbackSection.tsx
+│   │   │       ├── PendingTopicsPanel.tsx
 │   │   │       └── index.ts
 │   │   ├── team/
 │   │   │   ├── TeamPage.tsx            # Seguimiento de equipo (Kanban + detalle)
@@ -139,10 +146,9 @@ leadkit/
 │   │   ├── category.ts               # DEFAULT_CATEGORY_COLORS
 │   │   ├── team-task.ts              # PROGRESS_MODES, TEAM_TASK_STATUSES
 │   │   ├── timeline-event.ts         # TIMELINE_EVENT_TYPES
-│   │   ├── summary-item.ts           # (deprecated)
 │   │   └── index.ts
 │   ├── services/
-│   │   └── database.ts                # Operaciones IndexedDB (v4, 10 stores)
+│   │   └── database.ts                # Operaciones IndexedDB (v5, 11 stores)
 │   ├── types/                          # Sistema de tipos por entidad
 │   │   ├── entities/                   # Interfaces de datos
 │   │   │   ├── category.ts
@@ -153,25 +159,26 @@ leadkit/
 │   │   │   ├── timeline-event.ts
 │   │   │   ├── meeting.ts
 │   │   │   ├── meeting-topic.ts
+│   │   │   ├── meeting-snapshot.ts
 │   │   │   ├── team-member.ts
 │   │   │   ├── priority.ts
-│   │   │   ├── summary-item.ts       # (deprecated)
 │   │   │   └── index.ts
 │   │   ├── interfaces/                 # Props de componentes y contextos
 │   │   │   ├── personal-task.ts
 │   │   │   ├── team-task.ts
 │   │   │   ├── meeting.ts
+│   │   │   ├── meeting-snapshot.ts
 │   │   │   ├── priority.ts
 │   │   │   ├── category.ts
 │   │   │   ├── context.ts
 │   │   │   ├── task.ts
-│   │   │   ├── summary-item.ts       # (deprecated)
 │   │   │   └── index.ts
 │   │   └── index.ts
 │   ├── utils/
 │   │   ├── dates.ts                    # Utilidades de fechas/semanas
 │   │   ├── ids.ts                      # Generación de IDs
-│   │   └── team-tasks.ts              # getTaskProgress, isTaskBlocked
+│   │   ├── team-tasks.ts              # getTaskProgress, isTaskBlocked
+│   │   └── meeting-snapshots.ts       # generateMeetingSnapshots
 │   ├── App.tsx                         # Router shell (~20 líneas)
 │   ├── main.tsx                        # Entry point con BrowserRouter
 │   ├── index.css                       # Estilos globales + Tailwind
@@ -201,7 +208,7 @@ La aplicación usa **React Router v6** con las siguientes rutas:
 | `/`          | DashboardPage    | Resumen general con contadores       |
 | `/tasks`     | TasksPage        | Kanban de tareas                     |
 | `/team`      | TeamPage         | Seguimiento del equipo (Kanban + detalle)|
-| `/meetings`  | MeetingsPage     | Resúmenes semanales                  |
+| `/meetings`  | MeetingsPage     | Reuniones con el leader              |
 | `/settings`  | SettingsPage     | CRUD de miembros y prioridades       |
 
 ### Navegación
@@ -218,7 +225,7 @@ La aplicación usa **React Router v6** con las siguientes rutas:
 | **DataContext** | teamMembers, priorities, categories | team_members, priorities, categories |
 | **PersonalTasksContext** | personalTasks | personal_tasks |
 | **TeamTasksContext** | teamTasks, subtasks, taskComments, timelineEvents | team_tasks, subtasks, task_comments, timeline_events |
-| **MeetingsContext** | meetings, meetingTopics | meetings, meeting_topics |
+| **MeetingsContext** | meetings, meetingTopics, meetingSnapshots | meetings, meeting_topics, meeting_snapshots |
 
 ### Flujo de Datos
 
@@ -295,6 +302,12 @@ La aplicación usa **React Router v6** con las siguientes rutas:
 ```
 > `meeting_id` nullable: permite temas sin reunión asignada.
 
+#### MeetingSnapshot
+```typescript
+{ id, meeting_id, member_id, member_name, tasks_doing, tasks_blocked, tasks_completed_since_last, overall_progress, created_at }
+```
+> Snapshot del estado de un miembro del equipo en una reunión. Generado automáticamente desde el tracking.
+
 ### Colores disponibles para prioridades
 
 | Color    | Valor Tailwind |
@@ -316,10 +329,10 @@ La aplicación usa **React Router v6** con las siguientes rutas:
 
 ```typescript
 const DB_NAME = "FrontendTeamDB";
-const DB_VERSION = 4;
+const DB_VERSION = 5;
 ```
 
-### Object Stores (10)
+### Object Stores (11)
 
 | Store | keyPath | Índices |
 |---|---|---|
@@ -333,6 +346,7 @@ const DB_VERSION = 4;
 | `timeline_events` | `id` | `team_task_id` |
 | `meetings` | `id` | `date` |
 | `meeting_topics` | `id` | `meeting_id`, `resolved` |
+| `meeting_snapshots` | `id` | `meeting_id` |
 
 ### Operaciones
 
@@ -375,10 +389,13 @@ App (Router shell)
         │       ├── CommentSection (comentarios cronológicos)
         │       └── TaskTimeline (línea cronológica vertical)
         ├── MeetingsPage
-        │   ├── WeekSelector (navegación semanas)
-        │   ├── AddSummaryForm (título + descripción + categoría)
-        │   └── CategorySection (x4 categorías)
-        │       └── SummaryItemCard (título + descripción)
+        │   ├── MeetingListItem (lista de reuniones)
+        │   ├── PendingTopicsPanel (temas flotantes)
+        │   ├── CreateMeetingModal (nueva reunión)
+        │   └── MeetingModal (detalle, 3 tabs)
+        │       ├── TeamStatusSection → MemberSnapshotCard
+        │       ├── TopicsSection (temas vinculados)
+        │       └── FeedbackSection (feedback del líder)
         └── SettingsPage
             ├── TeamMembersSection (CRUD miembros)
             └── PrioritiesSection (CRUD prioridades)
@@ -403,7 +420,14 @@ App (Router shell)
 | `SubtaskList`       | views/team/components/          | Checklist de subtareas             |
 | `CommentSection`    | views/team/components/          | Comentarios de tarea               |
 | `TaskTimeline`      | views/team/components/          | Timeline cronológico               |
-| `SummaryItemCard`   | views/meetings/components/      | Ítem con título y descripción      |
+| `CreateMeetingModal` | views/meetings/components/      | Modal para crear reunión            |
+| `MeetingListItem`    | views/meetings/components/      | Tarjeta de reunión en la lista      |
+| `MeetingModal`       | views/meetings/components/      | Modal detalle con 3 tabs            |
+| `TeamStatusSection`  | views/meetings/components/      | Tab estado del equipo               |
+| `MemberSnapshotCard` | views/meetings/components/      | Snapshot de un miembro              |
+| `TopicsSection`      | views/meetings/components/      | Tab temas de reunión                |
+| `FeedbackSection`    | views/meetings/components/      | Tab feedback del líder              |
+| `PendingTopicsPanel` | views/meetings/components/      | Panel de temas pendientes globales  |
 
 ---
 
@@ -437,14 +461,16 @@ App (Router shell)
 - Mover tareas entre columnas con timeline event automático
 - Responsive: tabs en móvil, columnas en desktop
 
-### Resumen Semanal (`/meetings`)
+### Reuniones con el Leader (`/meetings`)
 
-- Navegación entre semanas (anterior/siguiente)
-- Mostrar rango de fechas de la semana
-- Añadir ítems con título y descripción opcional
-- Cuatro categorías diferenciadas por color
-- Eliminar ítems
-- Persistencia por semana
+- Listado de reuniones ordenadas por fecha (más recientes primero)
+- Crear reuniones con fecha y notas opcionales
+- Modal de detalle con 3 tabs:
+  - **Estado del Equipo:** Snapshot auto-generado por miembro (tareas en progreso, bloqueadas, completadas desde la última reunión, progreso general)
+  - **Temas:** Crear, resolver y eliminar temas. Vincular temas flotantes a una reunión
+  - **Feedback:** Registrar feedback del líder con guardado explícito
+- Panel de temas pendientes globales (sin reunión asignada)
+- Eliminación de reunión con cascade delete de snapshots y unlink de temas
 
 ### Configuración (`/settings`)
 

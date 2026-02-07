@@ -1,5 +1,4 @@
 export type { TaskCardProps, TaskModalProps, KanbanColumnProps } from './task';
-export type { SummaryItemCardProps } from './summary-item';
 export type { PrioritySelectorProps } from './priority';
 export type { CategorySelectorProps } from './category';
 export type { DataContextType } from './context';
@@ -14,4 +13,14 @@ export type {
   CommentSectionProps,
   TaskTimelineProps,
 } from './team-task';
-export type { MeetingsContextType } from './meeting';
+export type {
+  MeetingsContextType,
+  MeetingListItemProps,
+  MeetingModalProps,
+  TeamStatusSectionProps,
+  TopicsSectionProps,
+  FeedbackSectionProps,
+  PendingTopicsPanelProps,
+  CreateMeetingModalProps,
+} from './meeting';
+export type { MemberSnapshotCardProps } from './meeting-snapshot';

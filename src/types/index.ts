@@ -1,5 +1,4 @@
 export type {
-  SummaryItem,
   TeamMember,
   Priority,
   Category,
@@ -11,13 +10,16 @@ export type {
   TimelineEventType,
   Meeting,
   MeetingTopic,
+  MeetingSnapshot,
+  SnapshotTask,
+  SnapshotBlockedTask,
+  SnapshotCompletedTask,
 } from './entities';
 
 export type {
   TaskCardProps,
   TaskModalProps,
   KanbanColumnProps,
-  SummaryItemCardProps,
   PrioritySelectorProps,
   CategorySelectorProps,
   DataContextType,
@@ -31,4 +33,12 @@ export type {
   CommentSectionProps,
   TaskTimelineProps,
   MeetingsContextType,
+  MeetingListItemProps,
+  MeetingModalProps,
+  TeamStatusSectionProps,
+  TopicsSectionProps,
+  FeedbackSectionProps,
+  PendingTopicsPanelProps,
+  CreateMeetingModalProps,
+  MemberSnapshotCardProps,
 } from './interfaces';
