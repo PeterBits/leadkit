@@ -26,7 +26,7 @@ Multi-page React app for frontend team management: Kanban board, weekly meeting 
 - `/tasks` → TasksPage (Kanban board)
 - `/team` → TeamPage (team task tracking: Kanban + detail panel + subtasks/comments/timeline)
 - `/meetings` → MeetingsPage (meetings with leader: snapshots, topics, feedback)
-- `/settings` → SettingsPage (team members + priorities CRUD)
+- `/settings` → SettingsPage (team members + priorities + categories CRUD)
 
 All routes render inside `Layout` which provides persistent navigation (Sidebar on desktop, BottomNav on mobile).
 

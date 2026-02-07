@@ -123,7 +123,7 @@ leadkit/
 │   │   │       ├── TaskTimeline.tsx
 │   │   │       └── index.ts
 │   │   ├── settings/
-│   │   │   └── SettingsPage.tsx        # Configuración de equipo y prioridades
+│   │   │   └── SettingsPage.tsx        # Configuración de equipo, prioridades y categorías
 │   │   └── index.ts
 │   ├── components/
 │   │   ├── shared/                     # Componentes compartidos entre vistas
@@ -209,7 +209,7 @@ La aplicación usa **React Router v6** con las siguientes rutas:
 | `/tasks`     | TasksPage        | Kanban de tareas                     |
 | `/team`      | TeamPage         | Seguimiento del equipo (Kanban + detalle)|
 | `/meetings`  | MeetingsPage     | Reuniones con el leader              |
-| `/settings`  | SettingsPage     | CRUD de miembros y prioridades       |
+| `/settings`  | SettingsPage     | CRUD de miembros, prioridades y categorías |
 
 ### Navegación
 
@@ -398,7 +398,8 @@ App (Router shell)
         │       └── FeedbackSection (feedback del líder)
         └── SettingsPage
             ├── TeamMembersSection (CRUD miembros)
-            └── PrioritiesSection (CRUD prioridades)
+            ├── PrioritiesSection (CRUD prioridades)
+            └── CategoriesSection (CRUD categorías)
 ```
 
 ### Componentes Principales
@@ -476,8 +477,9 @@ App (Router shell)
 
 - Crear/eliminar miembros del equipo
 - Crear/eliminar niveles de prioridad (1-10) con color asociado
+- Crear/eliminar categorías con nombre y color asociado
 - Prioridades únicas por nivel
-- 8 colores disponibles
+- 8 colores disponibles para prioridades y categorías
 
 ### Dashboard (`/`)
 
