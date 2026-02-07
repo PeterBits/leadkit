@@ -373,7 +373,8 @@ App (Router shell)
     ├── BottomNav (móvil)
     └── Outlet → Pages
         ├── DashboardPage
-        │   └── Contadores + Accesos rápidos
+        │   ├── Widgets (Mis Tareas, Equipo, Próxima Reunión, Alertas)
+        │   └── Accesos rápidos (4 botones)
         ├── TasksPage
         │   ├── Filtros (select por categoria)
         │   ├── KanbanColumn (x3: todo, doing, done)
@@ -483,9 +484,11 @@ App (Router shell)
 
 ### Dashboard (`/`)
 
-- Contadores de tareas por estado
-- Contador de miembros del equipo
-- Accesos rápidos a tareas y reuniones
+- **Mis Tareas:** Contador por estado (pendientes, en curso, completadas)
+- **Equipo:** Resumen por persona (tareas activas, bloqueos)
+- **Próxima Reunión:** Fecha + temas vinculados + temas pendientes sin vincular
+- **Alertas:** Tareas con retraso (pasaron deadline), bloqueos activos, tareas estancadas (>7 días en doing)
+- **Accesos rápidos:** Crear tarea personal, crear tarea de equipo, añadir tema pendiente, ir a reuniones
 
 ### Persistencia
 
