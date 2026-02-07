@@ -1,17 +1,25 @@
 import React, { useState } from 'react';
-import { X } from 'lucide-react';
+import { X, AlertTriangle } from 'lucide-react';
 import { CreateMeetingModalProps } from '../../../types';
 import { useMeetingsContext } from '../../../context/MeetingsContext';
 
+function isSameDayStr(timestamp: number, dateStr: string): boolean {
+  const d = new Date(timestamp);
+  const [y, m, day] = dateStr.split('-').map(Number);
+  return d.getFullYear() === y && d.getMonth() === m - 1 && d.getDate() === day;
+}
+
 export const CreateMeetingModal: React.FC<CreateMeetingModalProps> = ({ onClose }) => {
-  const { saveMeeting } = useMeetingsContext();
+  const { saveMeeting, meetings } = useMeetingsContext();
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
   const [notes, setNotes] = useState('');
 
+  const dateExists = date ? meetings.some(m => isSameDayStr(m.date, date)) : false;
+
   const handleSubmit = async () => {
-    if (!date) return;
+    if (!date || dateExists) return;
     await saveMeeting({
-      date: new Date(date).getTime(),
+      date: new Date(date + 'T00:00:00').getTime(),
       notes,
       leader_feedback: '',
     });
@@ -62,6 +70,13 @@ export const CreateMeetingModal: React.FC<CreateMeetingModalProps> = ({ onClose 
               />
             </div>
 
+            {dateExists && (
+              <div className="flex items-center gap-2 p-3 bg-orange-500/10 border border-orange-500/30 rounded-lg text-sm text-orange-300">
+                <AlertTriangle size={16} className="flex-shrink-0" />
+                Ya existe una reunión para esta fecha
+              </div>
+            )}
+
             <div className="flex flex-col-reverse sm:flex-row justify-end gap-2 pt-2 pb-4 sm:pb-0">
               <button
                 onClick={onClose}
@@ -71,7 +86,7 @@ export const CreateMeetingModal: React.FC<CreateMeetingModalProps> = ({ onClose 
               </button>
               <button
                 onClick={handleSubmit}
-                disabled={!date}
+                disabled={!date || dateExists}
                 className="w-full sm:w-auto px-4 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-base font-medium disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Crear

@@ -7,7 +7,7 @@ import {
   Plus,
   AlertTriangle,
   Clock,
-  MessageSquare,
+  Lock,
 } from 'lucide-react';
 import {
   usePersonalTasksContext,
@@ -35,7 +35,7 @@ export function DashboardPage() {
     return {
       id: member.id,
       name: member.name,
-      total: tasks.length,
+      todo: tasks.filter(t => t.status === 'todo').length,
       doing: tasks.filter(t => t.status === 'doing').length,
       blocked,
     };
@@ -50,7 +50,7 @@ export function DashboardPage() {
     : 0;
   const pendingTopicsCount = meetingTopics.filter(t => t.meeting_id === null && !t.resolved).length;
 
-  // Alerts
+  // Alerts — individual tasks
   const overdueTeamTasks = teamTasks.filter(
     t => t.deadline && t.deadline < now && t.status !== 'done',
   );
@@ -60,6 +60,9 @@ export function DashboardPage() {
     t => t.status === 'doing' && t.updated_at < now - sevenDaysMs,
   );
   const totalAlerts = overdueTeamTasks.length + blockedTeamTasks.length + staleDoingTasks.length;
+
+  const getAssigneeName = (assigneeId: string) =>
+    teamMembers.find(m => m.id === assigneeId)?.name || 'Sin asignar';
 
   return (
     <>
@@ -102,6 +105,7 @@ export function DashboardPage() {
                   <span className="text-gray-400 truncate">{m.name}</span>
                   <div className="flex items-center gap-2 flex-shrink-0">
                     <span className="text-xs">{m.doing} activas</span>
+                    <span className="text-xs text-gray-500">{m.todo} pend.</span>
                     {m.blocked > 0 && (
                       <span className="text-xs text-red-400">{m.blocked} bloq.</span>
                     )}
@@ -141,7 +145,7 @@ export function DashboardPage() {
           )}
         </div>
 
-        {/* Alerts */}
+        {/* Alerts — detailed */}
         <div className="bg-gray-900 rounded-lg p-4 border border-gray-800">
           <div className="flex items-center gap-2 mb-3">
             <AlertTriangle
@@ -156,25 +160,38 @@ export function DashboardPage() {
             )}
           </div>
           {totalAlerts > 0 ? (
-            <div className="space-y-2 text-sm">
-              {overdueTeamTasks.length > 0 && (
-                <div className="flex items-center gap-2 text-red-400">
-                  <Clock size={14} />
-                  <span>{overdueTeamTasks.length} con retraso</span>
+            <div className="space-y-1.5 text-sm max-h-48 overflow-y-auto">
+              {overdueTeamTasks.map(t => (
+                <div key={`overdue-${t.id}`} className="flex items-start gap-2 text-red-400">
+                  <Clock size={13} className="mt-0.5 shrink-0" />
+                  <div className="min-w-0">
+                    <p className="text-xs truncate">{t.title}</p>
+                    <p className="text-[10px] text-red-400/70">{getAssigneeName(t.assignee_id)}</p>
+                  </div>
                 </div>
-              )}
-              {blockedTeamTasks.length > 0 && (
-                <div className="flex items-center gap-2 text-orange-400">
-                  <AlertTriangle size={14} />
-                  <span>{blockedTeamTasks.length} bloqueadas</span>
+              ))}
+              {blockedTeamTasks.map(t => (
+                <div key={`blocked-${t.id}`} className="flex items-start gap-2 text-orange-400">
+                  <Lock size={13} className="mt-0.5 shrink-0" />
+                  <div className="min-w-0">
+                    <p className="text-xs truncate">{t.title}</p>
+                    <p className="text-[10px] text-orange-400/70">
+                      {getAssigneeName(t.assignee_id)}
+                    </p>
+                  </div>
                 </div>
-              )}
-              {staleDoingTasks.length > 0 && (
-                <div className="flex items-center gap-2 text-yellow-400">
-                  <Clock size={14} />
-                  <span>{staleDoingTasks.length} estancadas (&gt;7d)</span>
+              ))}
+              {staleDoingTasks.map(t => (
+                <div key={`stale-${t.id}`} className="flex items-start gap-2 text-yellow-400">
+                  <Clock size={13} className="mt-0.5 shrink-0" />
+                  <div className="min-w-0">
+                    <p className="text-xs truncate">{t.title}</p>
+                    <p className="text-[10px] text-yellow-400/70">
+                      {getAssigneeName(t.assignee_id)}
+                    </p>
+                  </div>
                 </div>
-              )}
+              ))}
             </div>
           ) : (
             <p className="text-sm text-gray-500 italic">Sin alertas</p>
@@ -188,9 +205,9 @@ export function DashboardPage() {
           <Plus size={20} className="text-blue-400" />
           <h2 className="font-semibold text-gray-200">Accesos rápidos</h2>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
           <button
-            onClick={() => navigate('/tasks')}
+            onClick={() => navigate('/tasks', { state: { openCreateModal: true } })}
             className="flex items-center justify-between px-3 py-2.5 text-sm bg-gray-800 hover:bg-gray-700 rounded-lg transition-colors"
           >
             <span className="flex items-center gap-2">
@@ -200,7 +217,7 @@ export function DashboardPage() {
             <ArrowRight size={16} className="text-gray-500" />
           </button>
           <button
-            onClick={() => navigate('/team')}
+            onClick={() => navigate('/team', { state: { openCreateModal: true } })}
             className="flex items-center justify-between px-3 py-2.5 text-sm bg-gray-800 hover:bg-gray-700 rounded-lg transition-colors"
           >
             <span className="flex items-center gap-2">
@@ -210,22 +227,12 @@ export function DashboardPage() {
             <ArrowRight size={16} className="text-gray-500" />
           </button>
           <button
-            onClick={() => navigate('/meetings')}
-            className="flex items-center justify-between px-3 py-2.5 text-sm bg-gray-800 hover:bg-gray-700 rounded-lg transition-colors"
-          >
-            <span className="flex items-center gap-2">
-              <MessageSquare size={16} className="text-purple-400" />
-              Añadir tema pendiente
-            </span>
-            <ArrowRight size={16} className="text-gray-500" />
-          </button>
-          <button
-            onClick={() => navigate('/meetings')}
+            onClick={() => navigate('/meetings', { state: { createTodayMeeting: true } })}
             className="flex items-center justify-between px-3 py-2.5 text-sm bg-gray-800 hover:bg-gray-700 rounded-lg transition-colors"
           >
             <span className="flex items-center gap-2">
               <Calendar size={16} className="text-purple-400" />
-              Ir a reuniones
+              Reunión de hoy
             </span>
             <ArrowRight size={16} className="text-gray-500" />
           </button>

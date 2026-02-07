@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Plus, Tag } from 'lucide-react';
 import { PersonalTask } from '../../types';
 import { usePersonalTasksContext, useDataContext } from '../../context';
@@ -8,8 +9,18 @@ export function TasksPage() {
   const { personalTasks, savePersonalTask, deletePersonalTask, movePersonalTask } =
     usePersonalTasksContext();
   const { categories, priorities } = useDataContext();
+  const location = useLocation();
+  const navigate = useNavigate();
 
   const [modalTask, setModalTask] = useState<PersonalTask | null | 'new'>(null);
+
+  useEffect(() => {
+    const state = location.state as { openCreateModal?: boolean } | null;
+    if (state?.openCreateModal) {
+      setModalTask('new');
+      navigate(location.pathname, { replace: true, state: {} });
+    }
+  }, [location.state, navigate, location.pathname]);
   const [filter, setFilter] = useState<string>('all');
   const [activeKanbanTab, setActiveKanbanTab] = useState<PersonalTask['status']>('todo');
 

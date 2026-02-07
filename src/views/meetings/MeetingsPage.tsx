@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Plus, MessageSquare, Calendar } from 'lucide-react';
 import { Meeting } from '../../types';
 import { useMeetingsContext } from '../../context/MeetingsContext';
@@ -9,15 +10,56 @@ import {
   PendingTopicsPanel,
 } from './components';
 
+function isSameDay(timestamp: number, date: Date): boolean {
+  const d = new Date(timestamp);
+  return (
+    d.getFullYear() === date.getFullYear() &&
+    d.getMonth() === date.getMonth() &&
+    d.getDate() === date.getDate()
+  );
+}
+
 export function MeetingsPage() {
-  const { meetings, meetingTopics, meetingSnapshots, deleteMeeting, isLoading } =
+  const { meetings, meetingTopics, meetingSnapshots, saveMeeting, deleteMeeting, isLoading } =
     useMeetingsContext();
+  const location = useLocation();
+  const nav = useNavigate();
   const [selectedMeeting, setSelectedMeeting] = useState<Meeting | null>(null);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showPendingTopics, setShowPendingTopics] = useState(false);
+  const handledTodayRef = useRef(false);
+  const pendingOpenRef = useRef(false);
 
   const sortedMeetings = [...meetings].sort((a, b) => b.date - a.date);
   const pendingTopicsCount = meetingTopics.filter(t => t.meeting_id === null && !t.resolved).length;
+
+  useEffect(() => {
+    const state = location.state as { createTodayMeeting?: boolean } | null;
+    if (!state?.createTodayMeeting || isLoading || handledTodayRef.current) return;
+    handledTodayRef.current = true;
+    nav(location.pathname, { replace: true, state: {} });
+
+    const today = new Date();
+    const existing = meetings.find(m => isSameDay(m.date, today));
+    if (existing) {
+      setSelectedMeeting(existing);
+    } else {
+      pendingOpenRef.current = true;
+      const todayNormalized = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+      saveMeeting({ date: todayNormalized.getTime(), notes: '', leader_feedback: '' });
+    }
+  }, [location.state, isLoading, meetings, saveMeeting, nav, location.pathname]);
+
+  // Open newly created today's meeting once it appears in meetings list
+  useEffect(() => {
+    if (!pendingOpenRef.current) return;
+    const today = new Date();
+    const todayMeeting = meetings.find(m => isSameDay(m.date, today));
+    if (todayMeeting) {
+      pendingOpenRef.current = false;
+      setSelectedMeeting(todayMeeting);
+    }
+  }, [meetings]);
 
   if (isLoading) {
     return (

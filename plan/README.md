@@ -33,6 +33,7 @@ Transformar la aplicación de un Kanban simple a una herramienta completa de ges
 | 4 | Reuniones con el Líder | [fase-4-reuniones.md](./fase-4-reuniones.md) | Pendiente |
 | 5 | Dashboard | [fase-5-dashboard.md](./fase-5-dashboard.md) | Pendiente |
 | 6 | Configuración | [fase-6-configuracion.md](./fase-6-configuracion.md) | Pendiente |
+| 7 | Ajustes Dashboard | [fase-7-ajustes-dashboard.md](./fase-7-ajustes-dashboard.md) | Pendiente |
 
 ## Orden de Implementación Recomendado
 
@@ -49,6 +50,7 @@ Transformar la aplicación de un Kanban simple a una herramienta completa de ges
 | 9     | 3.3    | Detalle de tarea (modal completo)    | 8            |
 | 10    | 4      | Reuniones con el líder               | 8            |
 | 11    | 5      | Dashboard                            | 7, 8, 10     |
+| 12    | 7      | Ajustes Dashboard + accesos directos | 5             |
 
 ## Consideraciones Técnicas
 

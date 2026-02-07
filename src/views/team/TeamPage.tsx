@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Plus, LayoutGrid, Users, ChevronDown, ChevronRight } from 'lucide-react';
 import { TeamTask } from '../../types';
 import { useTeamTasksContext, useDataContext } from '../../context';
@@ -16,10 +17,20 @@ export function TeamPage() {
   const { teamTasks, subtasks, timelineEvents, saveTeamTask, deleteTeamTask, moveTeamTask } =
     useTeamTasksContext();
   const { teamMembers, priorities } = useDataContext();
+  const location = useLocation();
+  const navigate = useNavigate();
 
   const [viewMode, setViewMode] = useState<ViewMode>('unified');
   const [detailTask, setDetailTask] = useState<TeamTask | null>(null);
   const [modalTask, setModalTask] = useState<TeamTask | null | 'new'>(null);
+
+  useEffect(() => {
+    const state = location.state as { openCreateModal?: boolean } | null;
+    if (state?.openCreateModal) {
+      setModalTask('new');
+      navigate(location.pathname, { replace: true, state: {} });
+    }
+  }, [location.state, navigate, location.pathname]);
   const [expandedMembers, setExpandedMembers] = useState<Set<string>>(() => {
     return new Set(teamMembers.length > 0 ? [teamMembers[0].id] : []);
   });

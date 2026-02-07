@@ -1,5 +1,5 @@
 import React from 'react';
-import { ArrowRight, ArrowLeft, User, Lock, ExternalLink } from 'lucide-react';
+import { ArrowRight, ArrowLeft, User, Lock, ExternalLink, Clock } from 'lucide-react';
 import { TeamTaskCardProps } from '../../../types';
 import { getTaskProgress, isTaskBlocked } from '../../../utils/team-tasks';
 
@@ -18,16 +18,26 @@ export const TeamTaskCard: React.FC<TeamTaskCardProps> = ({
   const taskSubtasks = subtasks.filter(s => s.team_task_id === task.id);
   const progress = getTaskProgress(task, subtasks);
   const blocked = isTaskBlocked(task.id, timelineEvents);
+  const overdue = task.deadline !== null && task.deadline < Date.now() && task.status !== 'done';
 
   return (
     <div
-      className={`bg-gray-900 rounded-lg border ${blocked ? 'border-red-500/60' : 'border-gray-800'} border-l-4 ${borderColor} p-3 mb-2 cursor-pointer hover:bg-gray-850 transition-colors`}
+      className={`bg-gray-900 rounded-lg border ${blocked ? 'border-red-500/60' : overdue ? 'border-orange-500/60' : 'border-gray-800'} border-l-4 ${borderColor} p-3 mb-2 cursor-pointer hover:bg-gray-850 transition-colors`}
       onClick={() => onOpen(task)}
     >
       <div className="flex justify-between items-start mb-2">
         <h4 className="font-medium text-gray-100 text-sm flex-1 mr-2">{task.title}</h4>
-        {blocked && <Lock size={14} className="text-red-400 shrink-0 mt-0.5" />}
+        <div className="flex items-center gap-1 shrink-0 mt-0.5">
+          {overdue && <Clock size={14} className="text-orange-400" />}
+          {blocked && <Lock size={14} className="text-red-400" />}
+        </div>
       </div>
+      {overdue && (
+        <p className="text-[10px] text-orange-400 mb-1.5">
+          Vencida{' '}
+          {new Date(task.deadline!).toLocaleDateString('es-ES', { day: 'numeric', month: 'short' })}
+        </p>
+      )}
 
       {/* Progress bar */}
       {(taskSubtasks.length > 0 || task.progress_mode === 'manual') && (
