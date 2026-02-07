@@ -169,6 +169,7 @@ export function TeamTasksProvider({ children }: { children: ReactNode }) {
         toggleSubtask,
         saveTaskComment,
         deleteTaskComment,
+        addTimelineEvent,
       }}
     >
       {children}

@@ -105,11 +105,23 @@ leadkit/
 │   │   │       ├── SummaryItemCard.tsx
 │   │   │       └── index.ts
 │   │   ├── team/
-│   │   │   └── TeamPage.tsx            # Seguimiento de equipo (próximamente)
+│   │   │   ├── TeamPage.tsx            # Seguimiento de equipo (Kanban + detalle)
+│   │   │   └── components/             # Componentes exclusivos de team
+│   │   │       ├── TeamKanbanColumn.tsx
+│   │   │       ├── TeamTaskCard.tsx
+│   │   │       ├── TeamTaskModal.tsx
+│   │   │       ├── TeamTaskDetail.tsx
+│   │   │       ├── SubtaskList.tsx
+│   │   │       ├── CommentSection.tsx
+│   │   │       ├── TaskTimeline.tsx
+│   │   │       └── index.ts
 │   │   ├── settings/
 │   │   │   └── SettingsPage.tsx        # Configuración de equipo y prioridades
 │   │   └── index.ts
 │   ├── components/
+│   │   ├── shared/                     # Componentes compartidos entre vistas
+│   │   │   ├── PrioritySelector.tsx    # Selector de prioridad reutilizable
+│   │   │   └── index.ts
 │   │   └── layout/                     # Componentes compartidos (navegación)
 │   │       ├── Layout.tsx              # Shell con Sidebar + BottomNav + Outlet
 │   │       ├── Sidebar.tsx             # Navegación desktop (sidebar izquierdo)
@@ -158,7 +170,8 @@ leadkit/
 │   │   └── index.ts
 │   ├── utils/
 │   │   ├── dates.ts                    # Utilidades de fechas/semanas
-│   │   └── ids.ts                      # Generación de IDs
+│   │   ├── ids.ts                      # Generación de IDs
+│   │   └── team-tasks.ts              # getTaskProgress, isTaskBlocked
 │   ├── App.tsx                         # Router shell (~20 líneas)
 │   ├── main.tsx                        # Entry point con BrowserRouter
 │   ├── index.css                       # Estilos globales + Tailwind
@@ -187,7 +200,7 @@ La aplicación usa **React Router v6** con las siguientes rutas:
 | ------------ | ---------------- | ------------------------------------ |
 | `/`          | DashboardPage    | Resumen general con contadores       |
 | `/tasks`     | TasksPage        | Kanban de tareas                     |
-| `/team`      | TeamPage         | Seguimiento del equipo (próximamente)|
+| `/team`      | TeamPage         | Seguimiento del equipo (Kanban + detalle)|
 | `/meetings`  | MeetingsPage     | Resúmenes semanales                  |
 | `/settings`  | SettingsPage     | CRUD de miembros y prioridades       |
 
@@ -352,7 +365,15 @@ App (Router shell)
         │   ├── KanbanColumn (x3: todo, doing, done)
         │   │   └── TaskCard (x n tareas)
         │   └── TaskModal (crear/editar)
-        ├── TeamPage (próximamente)
+        ├── TeamPage
+        │   ├── Vista Unificada / Por Persona (toggle)
+        │   ├── TeamKanbanColumn (x3: todo, doing, done)
+        │   │   └── TeamTaskCard (progreso, bloqueado, JIRA)
+        │   ├── TeamTaskModal (crear/editar)
+        │   └── TeamTaskDetail (info + subtareas + comments + timeline)
+        │       ├── SubtaskList (checklist con progreso)
+        │       ├── CommentSection (comentarios cronológicos)
+        │       └── TaskTimeline (línea cronológica vertical)
         ├── MeetingsPage
         │   ├── WeekSelector (navegación semanas)
         │   ├── AddSummaryForm (título + descripción + categoría)
@@ -373,7 +394,15 @@ App (Router shell)
 | `TaskCard`        | views/tasks/components/         | Renderiza tarea con acciones       |
 | `KanbanColumn`    | views/tasks/components/         | Columna del Kanban                 |
 | `TaskModal`       | views/tasks/components/         | Modal crear/editar tarea           |
-| `SummaryItemCard` | views/meetings/components/      | Ítem con título y descripción      |
+| `PrioritySelector`  | components/shared/              | Selector de prioridad reutilizable |
+| `TeamTaskCard`      | views/team/components/          | Tarjeta de tarea con progreso      |
+| `TeamKanbanColumn`  | views/team/components/          | Columna Kanban de equipo           |
+| `TeamTaskModal`     | views/team/components/          | Modal crear/editar tarea equipo    |
+| `TeamTaskDetail`    | views/team/components/          | Panel detalle completo             |
+| `SubtaskList`       | views/team/components/          | Checklist de subtareas             |
+| `CommentSection`    | views/team/components/          | Comentarios de tarea               |
+| `TaskTimeline`      | views/team/components/          | Timeline cronológico               |
+| `SummaryItemCard`   | views/meetings/components/      | Ítem con título y descripción      |
 
 ---
 
@@ -389,6 +418,22 @@ App (Router shell)
 - Filtrar por miembro del equipo
 - Indicador visual de prioridad (borde coloreado)
 - Contador de tareas por columna
+
+### Seguimiento del Equipo (`/team`)
+
+- Kanban de 3 columnas para tareas de equipo (To Do, Doing, Done)
+- **Vista unificada:** todas las tareas en un solo tablero
+- **Vista por persona:** acordeón por cada miembro con su Kanban individual
+- Crear tareas con: título, descripción, asignado, prioridad, referencia JIRA, fechas, modo de progreso
+- **Panel de detalle** al hacer click en una tarjeta:
+  - Información general (asignado, prioridad, JIRA, fechas)
+  - Barra de progreso (automático por subtareas o manual)
+  - Checklist de subtareas con progreso visual
+  - Sección de comentarios cronológicos
+  - Timeline vertical con eventos automáticos y manuales
+- Bloquear/desbloquear tareas con indicador visual (borde rojo + icono)
+- Mover tareas entre columnas con timeline event automático
+- Responsive: tabs en móvil, columnas en desktop
 
 ### Resumen Semanal (`/meetings`)
 
@@ -500,9 +545,9 @@ export const PRIORITY_COLORS = [
 
 - [ ] Estadísticas del equipo (tareas completadas por persona/semana)
 - [ ] Etiquetas/tags personalizables
-- [x] Subtareas (checklist dentro de tarea) — modelo de datos creado
-- [x] Comentarios en tareas — modelo de datos creado
-- [x] Historial de cambios (timeline events) — modelo de datos creado
+- [x] Subtareas (checklist dentro de tarea) — implementado en Fase 3
+- [x] Comentarios en tareas — implementado en Fase 3
+- [x] Historial de cambios (timeline events) — implementado en Fase 3
 - [ ] Edición de miembros y prioridades existentes
 
 ### Prioridad Baja

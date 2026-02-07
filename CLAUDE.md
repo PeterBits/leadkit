@@ -24,7 +24,7 @@ Multi-page React app for frontend team management: Kanban board, weekly meeting 
 5 routes defined in `App.tsx` via React Router:
 - `/` → DashboardPage (task counters + quick links)
 - `/tasks` → TasksPage (Kanban board)
-- `/team` → TeamPage (placeholder for future team tracking)
+- `/team` → TeamPage (team task tracking: Kanban + detail panel + subtasks/comments/timeline)
 - `/meetings` → MeetingsPage (weekly summaries)
 - `/settings` → SettingsPage (team members + priorities CRUD)
 
@@ -49,11 +49,12 @@ Each CRUD operation writes to IndexedDB first, then updates React state.
 ### Component & View Organization
 
 - `views/` - Each view has its own folder with page + scoped components:
-  - `views/tasks/` - TasksPage + `components/` (KanbanColumn, TaskCard, TaskModal with PrioritySelector)
+  - `views/tasks/` - TasksPage + `components/` (KanbanColumn, TaskCard, TaskModal)
+  - `views/team/` - TeamPage + `components/` (TeamKanbanColumn, TeamTaskCard, TeamTaskModal, TeamTaskDetail, SubtaskList, CommentSection, TaskTimeline)
   - `views/meetings/` - MeetingsPage + `components/` (SummaryItemCard)
   - `views/dashboard/` - DashboardPage
-  - `views/team/` - TeamPage
   - `views/settings/` - SettingsPage
+- `components/shared/` - PrioritySelector (reusable across views)
 - `components/layout/` - Layout, Sidebar, BottomNav (persistent navigation shell, shared across all views)
 - `context/` - DataContext, PersonalTasksContext, TeamTasksContext, MeetingsContext (+ deprecated TasksContext)
 - `constants/` - Split by entity: `priority.ts`, `category.ts`, `team-task.ts`, `timeline-event.ts`, `summary-item.ts` (deprecated)

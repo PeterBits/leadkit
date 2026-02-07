@@ -24,5 +24,12 @@ export type {
   DataContextType,
   PersonalTasksContextType,
   TeamTasksContextType,
+  TeamTaskCardProps,
+  TeamKanbanColumnProps,
+  TeamTaskModalProps,
+  TeamTaskDetailProps,
+  SubtaskListProps,
+  CommentSectionProps,
+  TaskTimelineProps,
   MeetingsContextType,
 } from './interfaces';
