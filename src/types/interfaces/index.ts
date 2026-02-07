@@ -1,6 +1,7 @@
-export type { TaskCardProps, TaskModalProps, KanbanColumnProps, TasksContextType } from './task';
+export type { TaskCardProps, TaskModalProps, KanbanColumnProps } from './task';
 export type { SummaryItemCardProps } from './summary-item';
 export type { PrioritySelectorProps } from './priority';
+export type { CategorySelectorProps } from './category';
 export type { DataContextType } from './context';
 export type { PersonalTasksContextType } from './personal-task';
 export type {

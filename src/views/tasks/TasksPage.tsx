@@ -1,18 +1,20 @@
 import { useState } from 'react';
-import { Plus, Users } from 'lucide-react';
-import { Task } from '../../types';
-import { useTasksContext, useDataContext } from '../../context';
+import { Plus, Tag } from 'lucide-react';
+import { PersonalTask } from '../../types';
+import { usePersonalTasksContext, useDataContext } from '../../context';
 import { KanbanColumn, TaskModal } from './components';
 
 export function TasksPage() {
-  const { tasks, saveTask, deleteTask, moveTask } = useTasksContext();
-  const { teamMembers, priorities } = useDataContext();
+  const { personalTasks, savePersonalTask, deletePersonalTask, movePersonalTask } =
+    usePersonalTasksContext();
+  const { categories, priorities } = useDataContext();
 
-  const [modalTask, setModalTask] = useState<Task | null | 'new'>(null);
+  const [modalTask, setModalTask] = useState<PersonalTask | null | 'new'>(null);
   const [filter, setFilter] = useState<string>('all');
-  const [activeKanbanTab, setActiveKanbanTab] = useState<Task['status']>('todo');
+  const [activeKanbanTab, setActiveKanbanTab] = useState<PersonalTask['status']>('todo');
 
-  const filteredTasks = filter === 'all' ? tasks : tasks.filter(t => t.assignee_id === filter);
+  const filteredTasks =
+    filter === 'all' ? personalTasks : personalTasks.filter(t => t.category_id === filter);
 
   const kanbanTabs = [
     {
@@ -40,16 +42,16 @@ export function TasksPage() {
       {/* Kanban Controls */}
       <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3 mb-4 sm:mb-6">
         <div className="flex items-center gap-3">
-          <Users size={20} className="text-gray-400 hidden sm:block" />
+          <Tag size={20} className="text-gray-400 hidden sm:block" />
           <select
             value={filter}
             onChange={e => setFilter(e.target.value)}
             className="flex-1 sm:flex-none border border-gray-700 rounded-lg px-3 py-2 text-sm"
           >
-            <option value="all">Todos</option>
-            {teamMembers.map(m => (
-              <option key={m.id} value={m.id}>
-                {m.name}
+            <option value="all">Todas</option>
+            {categories.map(c => (
+              <option key={c.id} value={c.id}>
+                {c.name}
               </option>
             ))}
           </select>
@@ -88,12 +90,12 @@ export function TasksPage() {
           title={kanbanTabs.find(t => t.status === activeKanbanTab)!.label}
           status={activeKanbanTab}
           tasks={filteredTasks}
-          teamMembers={teamMembers}
+          categories={categories}
           priorities={priorities}
           color={kanbanTabs.find(t => t.status === activeKanbanTab)!.color}
           onEdit={setModalTask}
-          onDelete={deleteTask}
-          onMove={moveTask}
+          onDelete={deletePersonalTask}
+          onMove={movePersonalTask}
         />
       </div>
 
@@ -103,43 +105,43 @@ export function TasksPage() {
           title="To Do"
           status="todo"
           tasks={filteredTasks}
-          teamMembers={teamMembers}
+          categories={categories}
           priorities={priorities}
           color="bg-gray-500"
           onEdit={setModalTask}
-          onDelete={deleteTask}
-          onMove={moveTask}
+          onDelete={deletePersonalTask}
+          onMove={movePersonalTask}
         />
         <KanbanColumn
           title="Doing"
           status="doing"
           tasks={filteredTasks}
-          teamMembers={teamMembers}
+          categories={categories}
           priorities={priorities}
           color="bg-blue-500"
           onEdit={setModalTask}
-          onDelete={deleteTask}
-          onMove={moveTask}
+          onDelete={deletePersonalTask}
+          onMove={movePersonalTask}
         />
         <KanbanColumn
           title="Done"
           status="done"
           tasks={filteredTasks}
-          teamMembers={teamMembers}
+          categories={categories}
           priorities={priorities}
           color="bg-green-500"
           onEdit={setModalTask}
-          onDelete={deleteTask}
-          onMove={moveTask}
+          onDelete={deletePersonalTask}
+          onMove={movePersonalTask}
         />
       </div>
 
       {modalTask && (
         <TaskModal
           task={modalTask === 'new' ? null : modalTask}
-          teamMembers={teamMembers}
+          categories={categories}
           priorities={priorities}
-          onSave={saveTask}
+          onSave={savePersonalTask}
           onClose={() => setModalTask(null)}
         />
       )}

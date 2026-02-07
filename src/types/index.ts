@@ -1,5 +1,4 @@
 export type {
-  Task,
   SummaryItem,
   TeamMember,
   Priority,
@@ -18,9 +17,9 @@ export type {
   TaskCardProps,
   TaskModalProps,
   KanbanColumnProps,
-  TasksContextType,
   SummaryItemCardProps,
   PrioritySelectorProps,
+  CategorySelectorProps,
   DataContextType,
   PersonalTasksContextType,
   TeamTasksContextType,

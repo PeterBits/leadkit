@@ -121,6 +121,7 @@ leadkit/
 │   ├── components/
 │   │   ├── shared/                     # Componentes compartidos entre vistas
 │   │   │   ├── PrioritySelector.tsx    # Selector de prioridad reutilizable
+│   │   │   ├── CategorySelector.tsx   # Selector de categoria reutilizable
 │   │   │   └── index.ts
 │   │   └── layout/                     # Componentes compartidos (navegación)
 │   │       ├── Layout.tsx              # Shell con Sidebar + BottomNav + Outlet
@@ -132,7 +133,6 @@ leadkit/
 │   │   ├── PersonalTasksContext.tsx    # personalTasks
 │   │   ├── TeamTasksContext.tsx        # teamTasks, subtasks, comments, timeline
 │   │   ├── MeetingsContext.tsx         # meetings, meetingTopics
-│   │   ├── TasksContext.tsx            # (deprecated, se eliminará en Fase 2)
 │   │   └── index.ts
 │   ├── constants/                      # Constantes fragmentadas por entidad
 │   │   ├── priority.ts                # PRIORITY_COLORS
@@ -155,7 +155,6 @@ leadkit/
 │   │   │   ├── meeting-topic.ts
 │   │   │   ├── team-member.ts
 │   │   │   ├── priority.ts
-│   │   │   ├── task.ts               # (deprecated)
 │   │   │   ├── summary-item.ts       # (deprecated)
 │   │   │   └── index.ts
 │   │   ├── interfaces/                 # Props de componentes y contextos
@@ -163,8 +162,9 @@ leadkit/
 │   │   │   ├── team-task.ts
 │   │   │   ├── meeting.ts
 │   │   │   ├── priority.ts
+│   │   │   ├── category.ts
 │   │   │   ├── context.ts
-│   │   │   ├── task.ts               # (deprecated)
+│   │   │   ├── task.ts
 │   │   │   ├── summary-item.ts       # (deprecated)
 │   │   │   └── index.ts
 │   │   └── index.ts
@@ -211,7 +211,7 @@ La aplicación usa **React Router v6** con las siguientes rutas:
 
 ### Gestión de Estado
 
-5 React Contexts organizados por dominio:
+4 React Contexts organizados por dominio:
 
 | Contexto | Datos | Stores IndexedDB |
 |---|---|---|
@@ -361,10 +361,10 @@ App (Router shell)
         ├── DashboardPage
         │   └── Contadores + Accesos rápidos
         ├── TasksPage
-        │   ├── Filtros (select por miembro)
+        │   ├── Filtros (select por categoria)
         │   ├── KanbanColumn (x3: todo, doing, done)
         │   │   └── TaskCard (x n tareas)
-        │   └── TaskModal (crear/editar)
+        │   └── TaskModal (crear/editar con CategorySelector)
         ├── TeamPage
         │   ├── Vista Unificada / Por Persona (toggle)
         │   ├── TeamKanbanColumn (x3: todo, doing, done)
@@ -395,6 +395,7 @@ App (Router shell)
 | `KanbanColumn`    | views/tasks/components/         | Columna del Kanban                 |
 | `TaskModal`       | views/tasks/components/         | Modal crear/editar tarea           |
 | `PrioritySelector`  | components/shared/              | Selector de prioridad reutilizable |
+| `CategorySelector`  | components/shared/              | Selector de categoria reutilizable |
 | `TeamTaskCard`      | views/team/components/          | Tarjeta de tarea con progreso      |
 | `TeamKanbanColumn`  | views/team/components/          | Columna Kanban de equipo           |
 | `TeamTaskModal`     | views/team/components/          | Modal crear/editar tarea equipo    |
@@ -411,12 +412,13 @@ App (Router shell)
 ### Kanban Board (`/tasks`)
 
 - Tres columnas con estados: To Do, Doing, Done
-- Crear tareas con título, descripción, miembro asignado, prioridad
+- Crear tareas con titulo, descripcion, categoria, prioridad
 - Editar tareas existentes
 - Eliminar tareas
 - Mover tareas entre columnas (flechas)
-- Filtrar por miembro del equipo
+- Filtrar por categoria
 - Indicador visual de prioridad (borde coloreado)
+- Badge de categoria con color
 - Contador de tareas por columna
 
 ### Seguimiento del Equipo (`/team`)

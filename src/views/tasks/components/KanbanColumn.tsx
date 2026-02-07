@@ -6,7 +6,7 @@ export const KanbanColumn: React.FC<KanbanColumnProps> = ({
   title,
   status,
   tasks,
-  teamMembers,
+  categories,
   priorities,
   color,
   onEdit,
@@ -28,7 +28,7 @@ export const KanbanColumn: React.FC<KanbanColumnProps> = ({
           <TaskCard
             key={task.id}
             task={task}
-            teamMembers={teamMembers}
+            categories={categories}
             priorities={priorities}
             onEdit={onEdit}
             onDelete={onDelete}

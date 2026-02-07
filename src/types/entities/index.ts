@@ -1,5 +1,3 @@
-/** @deprecated Use PersonalTask or TeamTask instead */
-export type { Task } from './task';
 /** @deprecated Use Meeting + MeetingTopic instead */
 export type { SummaryItem } from './summary-item';
 

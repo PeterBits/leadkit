@@ -1,15 +1,15 @@
 import { useNavigate } from 'react-router-dom';
 import { ListTodo, Users, Calendar, ArrowRight } from 'lucide-react';
-import { useTasksContext, useDataContext } from '../../context';
+import { usePersonalTasksContext, useDataContext } from '../../context';
 
 export function DashboardPage() {
   const navigate = useNavigate();
-  const { tasks } = useTasksContext();
+  const { personalTasks } = usePersonalTasksContext();
   const { teamMembers } = useDataContext();
 
-  const todoCount = tasks.filter(t => t.status === 'todo').length;
-  const doingCount = tasks.filter(t => t.status === 'doing').length;
-  const doneCount = tasks.filter(t => t.status === 'done').length;
+  const todoCount = personalTasks.filter(t => t.status === 'todo').length;
+  const doingCount = personalTasks.filter(t => t.status === 'doing').length;
+  const doneCount = personalTasks.filter(t => t.status === 'done').length;
 
   return (
     <>
@@ -52,7 +52,7 @@ export function DashboardPage() {
         <div className="bg-gray-900 rounded-lg p-4 border border-gray-800 sm:col-span-2 lg:col-span-1">
           <div className="flex items-center gap-2 mb-3">
             <Calendar size={20} className="text-purple-400" />
-            <h2 className="font-semibold text-gray-200">Accesos rápidos</h2>
+            <h2 className="font-semibold text-gray-200">Accesos rapidos</h2>
           </div>
           <div className="space-y-2">
             <button

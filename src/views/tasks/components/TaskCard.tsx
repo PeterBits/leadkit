@@ -1,16 +1,16 @@
 import React from 'react';
-import { Trash2, Edit2, ArrowRight, ArrowLeft, User } from 'lucide-react';
+import { Trash2, Edit2, ArrowRight, ArrowLeft } from 'lucide-react';
 import { TaskCardProps } from '../../../types';
 
 export const TaskCard: React.FC<TaskCardProps> = ({
   task,
-  teamMembers,
+  categories,
   priorities,
   onEdit,
   onDelete,
   onMove,
 }) => {
-  const assignee = teamMembers.find(m => m.id === task.assignee_id);
+  const category = categories.find(c => c.id === task.category_id);
   const priority = priorities.find(p => p.id === task.priority_id);
   const borderColor = priority ? `border-l-${priority.color}` : 'border-l-gray-300';
 
@@ -32,10 +32,10 @@ export const TaskCard: React.FC<TaskCardProps> = ({
       {task.description && <p className="text-xs text-gray-400 mb-2">{task.description}</p>}
       <div className="flex justify-between items-center">
         <div className="flex gap-2 items-center flex-wrap">
-          {assignee && (
+          {category && (
             <span className="text-xs bg-gray-800 px-2 py-1 rounded flex items-center gap-1">
-              <User size={12} className="text-gray-400" />
-              {assignee.name}
+              <span className={`w-2 h-2 rounded-full bg-${category.color}`} />
+              {category.name}
             </span>
           )}
           {priority && (

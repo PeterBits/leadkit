@@ -32,13 +32,12 @@ All routes render inside `Layout` which provides persistent navigation (Sidebar 
 
 ### State Management
 
-5 React Contexts organized by domain:
+4 React Contexts organized by domain:
 
 - **DataContext** (`context/DataContext.tsx`): `teamMembers`, `priorities`, `categories` + their CRUD handlers. Reference data shared across the app.
 - **PersonalTasksContext** (`context/PersonalTasksContext.tsx`): `personalTasks` + save/delete/move. Tech lead's own tasks.
 - **TeamTasksContext** (`context/TeamTasksContext.tsx`): `teamTasks`, `subtasks`, `taskComments`, `timelineEvents` + full CRUD. Includes cascade delete and automatic timeline events.
 - **MeetingsContext** (`context/MeetingsContext.tsx`): `meetings`, `meetingTopics` + CRUD. Includes topic resolution and unlink-on-delete.
-- **~~TasksContext~~** (deprecated, will be removed in Phase 2): Legacy `tasks` context, kept temporarily for backward compatibility.
 
 Each CRUD operation writes to IndexedDB first, then updates React state.
 
@@ -54,12 +53,12 @@ Each CRUD operation writes to IndexedDB first, then updates React state.
   - `views/meetings/` - MeetingsPage + `components/` (SummaryItemCard)
   - `views/dashboard/` - DashboardPage
   - `views/settings/` - SettingsPage
-- `components/shared/` - PrioritySelector (reusable across views)
+- `components/shared/` - PrioritySelector, CategorySelector (reusable across views)
 - `components/layout/` - Layout, Sidebar, BottomNav (persistent navigation shell, shared across all views)
-- `context/` - DataContext, PersonalTasksContext, TeamTasksContext, MeetingsContext (+ deprecated TasksContext)
+- `context/` - DataContext, PersonalTasksContext, TeamTasksContext, MeetingsContext
 - `constants/` - Split by entity: `priority.ts`, `category.ts`, `team-task.ts`, `timeline-event.ts`, `summary-item.ts` (deprecated)
 - `types/` - Split by entity:
-  - `types/entities/` - One file per entity (category, personal-task, team-task, subtask, task-comment, timeline-event, meeting, meeting-topic, team-member, priority + deprecated: task, summary-item)
+  - `types/entities/` - One file per entity (category, personal-task, team-task, subtask, task-comment, timeline-event, meeting, meeting-topic, team-member, priority + deprecated: summary-item)
   - `types/interfaces/` - Component/context props organized by entity
 - Each folder has a barrel `index.ts`
 
@@ -80,7 +79,7 @@ Priority colors are applied dynamically (e.g., `` bg-${priority.color} ``, `` bo
 ### Types
 
 Entity-based type system split across two subdirectories:
-- `types/entities/` - Data model interfaces: `Category`, `PersonalTask`, `TeamTask`, `Subtask`, `TaskComment`, `TimelineEvent`, `Meeting`, `MeetingTopic`, `TeamMember`, `Priority` (+ deprecated `Task`, `SummaryItem`)
+- `types/entities/` - Data model interfaces: `Category`, `PersonalTask`, `TeamTask`, `Subtask`, `TaskComment`, `TimelineEvent`, `Meeting`, `MeetingTopic`, `TeamMember`, `Priority` (+ deprecated `SummaryItem`)
 - `types/interfaces/` - Component props and context types, organized by entity
 - No inline interfaces in components or services — all declared in `types/`
 

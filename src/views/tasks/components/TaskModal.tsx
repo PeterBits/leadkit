@@ -1,19 +1,19 @@
 import React, { useState } from 'react';
 import { X } from 'lucide-react';
-import { Task, TaskModalProps } from '../../../types';
-import { PrioritySelector } from '../../../components/shared';
+import { PersonalTask, TaskModalProps } from '../../../types';
+import { PrioritySelector, CategorySelector } from '../../../components/shared';
 
 export const TaskModal: React.FC<TaskModalProps> = ({
   task,
-  teamMembers,
+  categories,
   priorities,
   onSave,
   onClose,
 }) => {
   const [title, setTitle] = useState(task?.title || '');
   const [description, setDescription] = useState(task?.description || '');
-  const [assigneeId, setAssigneeId] = useState<string | null>(task?.assignee_id || null);
-  const [status] = useState(task?.status || ('todo' as Task['status']));
+  const [categoryId, setCategoryId] = useState<string | null>(task?.category_id || null);
+  const [status] = useState(task?.status || ('todo' as PersonalTask['status']));
   const [priorityId, setPriorityId] = useState<string | null>(task?.priority_id || null);
 
   const handleSubmit = () => {
@@ -21,7 +21,7 @@ export const TaskModal: React.FC<TaskModalProps> = ({
     onSave({
       title,
       description,
-      assignee_id: assigneeId,
+      category_id: categoryId,
       status,
       priority_id: priorityId,
       id: task?.id,
@@ -51,41 +51,34 @@ export const TaskModal: React.FC<TaskModalProps> = ({
           </div>
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium mb-1">Título</label>
+              <label className="block text-sm font-medium mb-1">Titulo</label>
               <input
                 type="text"
                 value={title}
                 onChange={e => setTitle(e.target.value)}
                 className="w-full border border-gray-700 rounded-lg px-3 py-2.5 text-base"
-                placeholder="Título de la tarea"
+                placeholder="Titulo de la tarea"
                 autoFocus
               />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1">Descripción</label>
+              <label className="block text-sm font-medium mb-1">Descripcion</label>
               <textarea
                 value={description}
                 onChange={e => setDescription(e.target.value)}
                 className="w-full border border-gray-700 rounded-lg px-3 py-2.5 text-base"
                 rows={3}
-                placeholder="Descripción opcional"
+                placeholder="Descripcion opcional"
               />
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium mb-1">Asignado a</label>
-                <select
-                  value={assigneeId || ''}
-                  onChange={e => setAssigneeId(e.target.value || null)}
-                  className="w-full border border-gray-700 rounded-lg px-3 py-2.5 text-base"
-                >
-                  <option value="">Sin asignar</option>
-                  {teamMembers.map(m => (
-                    <option key={m.id} value={m.id}>
-                      {m.name}
-                    </option>
-                  ))}
-                </select>
+                <label className="block text-sm font-medium mb-1">Categoria</label>
+                <CategorySelector
+                  categories={categories}
+                  value={categoryId}
+                  onChange={setCategoryId}
+                />
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1">Prioridad</label>
