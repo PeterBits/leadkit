@@ -16,11 +16,18 @@ export interface SnapshotCompletedTask {
   title: string;
 }
 
+export interface SnapshotTodoTask {
+  id: string;
+  title: string;
+  jira_ref: string | null;
+}
+
 export interface MeetingSnapshot {
   id: string;
   meeting_id: string;
   member_id: string;
   member_name: string;
+  tasks_todo: SnapshotTodoTask[];
   tasks_doing: SnapshotTask[];
   tasks_blocked: SnapshotBlockedTask[];
   tasks_completed_since_last: SnapshotCompletedTask[];

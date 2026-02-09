@@ -19,10 +19,12 @@ export const TopicsSection: React.FC<TopicsSectionProps> = ({ meetingId }) => {
     if (!newTitle.trim()) return;
     await saveMeetingTopic({
       meeting_id: meetingId,
+      team_task_id: null,
       title: newTitle.trim(),
       description: newDescription.trim(),
       resolved: false,
       resolved_at: null,
+      leader_response: '',
     });
     setNewTitle('');
     setNewDescription('');

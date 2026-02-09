@@ -1,9 +1,10 @@
-import { Meeting, MeetingTopic, MeetingSnapshot } from '../entities';
+import { Meeting, MeetingTopic, MeetingSnapshot, MeetingTaskFeedback } from '../entities';
 
 export interface MeetingsContextType {
   meetings: Meeting[];
   meetingTopics: MeetingTopic[];
   meetingSnapshots: MeetingSnapshot[];
+  meetingTaskFeedback: MeetingTaskFeedback[];
   isLoading: boolean;
   saveMeeting: (meetingData: Omit<Meeting, 'id' | 'created_at'> & { id?: string }) => Promise<void>;
   deleteMeeting: (id: string) => Promise<void>;
@@ -14,6 +15,10 @@ export interface MeetingsContextType {
   resolveMeetingTopic: (id: string) => Promise<void>;
   saveMeetingSnapshots: (snapshots: MeetingSnapshot[]) => Promise<void>;
   deleteMeetingSnapshots: (meetingId: string) => Promise<void>;
+  saveMeetingTaskFeedback: (
+    data: Omit<MeetingTaskFeedback, 'id' | 'created_at'> & { id?: string },
+  ) => Promise<void>;
+  deleteMeetingTaskFeedback: (id: string) => Promise<void>;
 }
 
 export interface MeetingListItemProps {
@@ -24,13 +29,13 @@ export interface MeetingListItemProps {
   onDelete: (id: string) => void;
 }
 
-export interface MeetingModalProps {
-  meeting: Meeting;
-  onClose: () => void;
+export interface BriefingSectionProps {
+  meetingId: string;
 }
 
-export interface TeamStatusSectionProps {
+export interface TaskFeedbackFieldProps {
   meetingId: string;
+  teamTaskId: string;
 }
 
 export interface TopicsSectionProps {

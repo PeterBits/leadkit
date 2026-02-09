@@ -6,7 +6,14 @@ import {
   MeetingsProvider,
 } from './context';
 import { Layout } from './components/layout';
-import { DashboardPage, TasksPage, TeamPage, MeetingsPage, SettingsPage } from './views';
+import {
+  DashboardPage,
+  TasksPage,
+  TeamPage,
+  MeetingsPage,
+  MeetingDetailPage,
+  SettingsPage,
+} from './views';
 
 export default function App() {
   return (
@@ -20,6 +27,7 @@ export default function App() {
                 <Route path="/tasks" element={<TasksPage />} />
                 <Route path="/team" element={<TeamPage />} />
                 <Route path="/meetings" element={<MeetingsPage />} />
+                <Route path="/meetings/:meetingId" element={<MeetingDetailPage />} />
                 <Route path="/settings" element={<SettingsPage />} />
               </Route>
             </Routes>

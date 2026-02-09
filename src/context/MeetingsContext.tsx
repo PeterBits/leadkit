@@ -1,5 +1,11 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
-import { Meeting, MeetingTopic, MeetingSnapshot, MeetingsContextType } from '../types';
+import {
+  Meeting,
+  MeetingTopic,
+  MeetingSnapshot,
+  MeetingTaskFeedback,
+  MeetingsContextType,
+} from '../types';
 import { dbOperation } from '../services/database';
 import { STORE_NAMES } from '../services/database';
 import { generateId } from '../utils/ids';
@@ -16,6 +22,7 @@ export function MeetingsProvider({ children }: { children: ReactNode }) {
   const [meetings, setMeetings] = useState<Meeting[]>([]);
   const [meetingTopics, setMeetingTopics] = useState<MeetingTopic[]>([]);
   const [meetingSnapshots, setMeetingSnapshots] = useState<MeetingSnapshot[]>([]);
+  const [meetingTaskFeedback, setMeetingTaskFeedback] = useState<MeetingTaskFeedback[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -34,9 +41,15 @@ export function MeetingsProvider({ children }: { children: ReactNode }) {
           'readonly',
           s => s.getAll(),
         );
+        const loadedFeedback = await dbOperation<MeetingTaskFeedback[]>(
+          STORE_NAMES.MEETING_TASK_FEEDBACK,
+          'readonly',
+          s => s.getAll(),
+        );
         setMeetings(loadedMeetings || []);
         setMeetingTopics(loadedTopics || []);
         setMeetingSnapshots(loadedSnapshots || []);
+        setMeetingTaskFeedback(loadedFeedback || []);
       } catch {
         console.log('MeetingsContext: DB init');
       } finally {
@@ -65,6 +78,15 @@ export function MeetingsProvider({ children }: { children: ReactNode }) {
       );
     }
     setMeetingSnapshots(prev => prev.filter(s => s.meeting_id !== id));
+
+    // Cascade-delete task feedback
+    const relatedFeedback = meetingTaskFeedback.filter(f => f.meeting_id === id);
+    for (const fb of relatedFeedback) {
+      await dbOperation(STORE_NAMES.MEETING_TASK_FEEDBACK, 'readwrite', store =>
+        store.delete(fb.id),
+      );
+    }
+    setMeetingTaskFeedback(prev => prev.filter(f => f.meeting_id !== id));
 
     // Unlink topics
     const relatedTopics = meetingTopics.filter(t => t.meeting_id === id);
@@ -131,12 +153,30 @@ export function MeetingsProvider({ children }: { children: ReactNode }) {
     setMeetingSnapshots(prev => prev.filter(s => s.meeting_id !== meetingId));
   };
 
+  const saveMeetingTaskFeedback = async (
+    data: Omit<MeetingTaskFeedback, 'id' | 'created_at'> & { id?: string },
+  ) => {
+    const feedback: MeetingTaskFeedback = data.id
+      ? { ...meetingTaskFeedback.find(f => f.id === data.id)!, ...data }
+      : ({ ...data, id: generateId(), created_at: Date.now() } as MeetingTaskFeedback);
+    await dbOperation(STORE_NAMES.MEETING_TASK_FEEDBACK, 'readwrite', store => store.put(feedback));
+    setMeetingTaskFeedback(prev =>
+      data.id ? prev.map(f => (f.id === feedback.id ? feedback : f)) : [...prev, feedback],
+    );
+  };
+
+  const deleteMeetingTaskFeedback = async (id: string) => {
+    await dbOperation(STORE_NAMES.MEETING_TASK_FEEDBACK, 'readwrite', store => store.delete(id));
+    setMeetingTaskFeedback(prev => prev.filter(f => f.id !== id));
+  };
+
   return (
     <MeetingsContext.Provider
       value={{
         meetings,
         meetingTopics,
         meetingSnapshots,
+        meetingTaskFeedback,
         isLoading,
         saveMeeting,
         deleteMeeting,
@@ -145,6 +185,8 @@ export function MeetingsProvider({ children }: { children: ReactNode }) {
         resolveMeetingTopic,
         saveMeetingSnapshots,
         deleteMeetingSnapshots,
+        saveMeetingTaskFeedback,
+        deleteMeetingTaskFeedback,
       }}
     >
       {children}

@@ -22,8 +22,20 @@ export function generateMeetingSnapshots(
   return teamMembers.map(member => {
     const memberTasks = teamTasks.filter(t => t.assignee_id === member.id);
 
+    const blockedIds = new Set(
+      memberTasks.filter(t => isTaskBlocked(t.id, timelineEvents)).map(t => t.id),
+    );
+
+    const tasks_todo = memberTasks
+      .filter(t => t.status === 'todo' && !blockedIds.has(t.id))
+      .map(t => ({
+        id: t.id,
+        title: t.title,
+        jira_ref: t.jira_ref,
+      }));
+
     const tasks_doing = memberTasks
-      .filter(t => t.status === 'doing')
+      .filter(t => t.status === 'doing' && !blockedIds.has(t.id))
       .map(t => ({
         id: t.id,
         title: t.title,
@@ -32,7 +44,7 @@ export function generateMeetingSnapshots(
       }));
 
     const tasks_blocked = memberTasks
-      .filter(t => isTaskBlocked(t.id, timelineEvents))
+      .filter(t => blockedIds.has(t.id))
       .map(t => {
         const blockedEvent = timelineEvents
           .filter(e => e.team_task_id === t.id && e.type === 'blocked')
@@ -65,6 +77,7 @@ export function generateMeetingSnapshots(
       meeting_id: meetingId,
       member_id: member.id,
       member_name: member.name,
+      tasks_todo,
       tasks_doing,
       tasks_blocked,
       tasks_completed_since_last,

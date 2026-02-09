@@ -14,10 +14,12 @@ export const PendingTopicsPanel: React.FC<PendingTopicsPanelProps> = ({ onClose 
     if (!newTitle.trim()) return;
     await saveMeetingTopic({
       meeting_id: null,
+      team_task_id: null,
       title: newTitle.trim(),
       description: newDescription.trim(),
       resolved: false,
       resolved_at: null,
+      leader_response: '',
     });
     setNewTitle('');
     setNewDescription('');

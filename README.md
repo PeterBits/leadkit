@@ -100,13 +100,14 @@ leadkit/
 │   │   │       ├── TaskModal.tsx
 │   │   │       └── index.ts
 │   │   ├── meetings/
-│   │   │   ├── MeetingsPage.tsx        # Reuniones con el Leader
+│   │   │   ├── MeetingsPage.tsx        # Lista de reuniones
+│   │   │   ├── MeetingDetailPage.tsx   # Detalle de reunión (vista completa)
 │   │   │   └── components/             # Componentes exclusivos de meetings
 │   │   │       ├── CreateMeetingModal.tsx
 │   │   │       ├── MeetingListItem.tsx
-│   │   │       ├── MeetingModal.tsx
-│   │   │       ├── TeamStatusSection.tsx
+│   │   │       ├── BriefingSection.tsx
 │   │   │       ├── MemberSnapshotCard.tsx
+│   │   │       ├── TaskFeedbackField.tsx
 │   │   │       ├── TopicsSection.tsx
 │   │   │       ├── FeedbackSection.tsx
 │   │   │       ├── PendingTopicsPanel.tsx
@@ -139,7 +140,7 @@ leadkit/
 │   │   ├── DataContext.tsx             # teamMembers, priorities, categories
 │   │   ├── PersonalTasksContext.tsx    # personalTasks
 │   │   ├── TeamTasksContext.tsx        # teamTasks, subtasks, comments, timeline
-│   │   ├── MeetingsContext.tsx         # meetings, meetingTopics
+│   │   ├── MeetingsContext.tsx         # meetings, meetingTopics, meetingSnapshots, meetingTaskFeedback
 │   │   └── index.ts
 │   ├── constants/                      # Constantes fragmentadas por entidad
 │   │   ├── priority.ts                # PRIORITY_COLORS
@@ -148,7 +149,7 @@ leadkit/
 │   │   ├── timeline-event.ts         # TIMELINE_EVENT_TYPES
 │   │   └── index.ts
 │   ├── services/
-│   │   └── database.ts                # Operaciones IndexedDB (v5, 11 stores)
+│   │   └── database.ts                # Operaciones IndexedDB (v6, 12 stores)
 │   ├── types/                          # Sistema de tipos por entidad
 │   │   ├── entities/                   # Interfaces de datos
 │   │   │   ├── category.ts
@@ -160,6 +161,7 @@ leadkit/
 │   │   │   ├── meeting.ts
 │   │   │   ├── meeting-topic.ts
 │   │   │   ├── meeting-snapshot.ts
+│   │   │   ├── meeting-task-feedback.ts
 │   │   │   ├── team-member.ts
 │   │   │   ├── priority.ts
 │   │   │   └── index.ts
@@ -208,7 +210,8 @@ La aplicación usa **React Router v6** con las siguientes rutas:
 | `/`          | DashboardPage    | Resumen general con contadores       |
 | `/tasks`     | TasksPage        | Kanban de tareas                     |
 | `/team`      | TeamPage         | Seguimiento del equipo (Kanban + detalle)|
-| `/meetings`  | MeetingsPage     | Reuniones con el leader              |
+| `/meetings`  | MeetingsPage     | Lista de reuniones                   |
+| `/meetings/:meetingId` | MeetingDetailPage | Detalle de reunión (briefing + feedback) |
 | `/settings`  | SettingsPage     | CRUD de miembros, prioridades y categorías |
 
 ### Navegación
@@ -225,7 +228,7 @@ La aplicación usa **React Router v6** con las siguientes rutas:
 | **DataContext** | teamMembers, priorities, categories | team_members, priorities, categories |
 | **PersonalTasksContext** | personalTasks | personal_tasks |
 | **TeamTasksContext** | teamTasks, subtasks, taskComments, timelineEvents | team_tasks, subtasks, task_comments, timeline_events |
-| **MeetingsContext** | meetings, meetingTopics, meetingSnapshots | meetings, meeting_topics, meeting_snapshots |
+| **MeetingsContext** | meetings, meetingTopics, meetingSnapshots, meetingTaskFeedback | meetings, meeting_topics, meeting_snapshots, meeting_task_feedback |
 
 ### Flujo de Datos
 
@@ -298,15 +301,21 @@ La aplicación usa **React Router v6** con las siguientes rutas:
 
 #### MeetingTopic
 ```typescript
-{ id, meeting_id, title, description, resolved, resolved_at, created_at }
+{ id, meeting_id, team_task_id, title, description, resolved, resolved_at, leader_response, created_at }
 ```
-> `meeting_id` nullable: permite temas sin reunión asignada.
+> `meeting_id` nullable: permite temas sin reunión asignada. `team_task_id` nullable: permite vincular un tema a una tarea del equipo. `leader_response`: comentarios sobre este tema.
+
+#### MeetingTaskFeedback
+```typescript
+{ id, meeting_id, team_task_id, content, created_at }
+```
+> Comentarios por tarea dentro de una reunión. Entidad separada de snapshots para que sobreviva la regeneración.
 
 #### MeetingSnapshot
 ```typescript
-{ id, meeting_id, member_id, member_name, tasks_doing, tasks_blocked, tasks_completed_since_last, overall_progress, created_at }
+{ id, meeting_id, member_id, member_name, tasks_todo, tasks_doing, tasks_blocked, tasks_completed_since_last, overall_progress, created_at }
 ```
-> Snapshot del estado de un miembro del equipo en una reunión. Generado automáticamente desde el tracking.
+> Snapshot del estado de un miembro del equipo en una reunión. Incluye tareas pendientes, en progreso, bloqueadas y completadas desde la última reunión. Se auto-genera al entrar por primera vez al detalle de la reunión.
 
 ### Colores disponibles para prioridades
 
@@ -329,10 +338,10 @@ La aplicación usa **React Router v6** con las siguientes rutas:
 
 ```typescript
 const DB_NAME = "FrontendTeamDB";
-const DB_VERSION = 5;
+const DB_VERSION = 6;
 ```
 
-### Object Stores (11)
+### Object Stores (12)
 
 | Store | keyPath | Índices |
 |---|---|---|
@@ -345,8 +354,9 @@ const DB_VERSION = 5;
 | `task_comments` | `id` | `team_task_id` |
 | `timeline_events` | `id` | `team_task_id` |
 | `meetings` | `id` | `date` |
-| `meeting_topics` | `id` | `meeting_id`, `resolved` |
+| `meeting_topics` | `id` | `meeting_id`, `resolved`, `team_task_id` |
 | `meeting_snapshots` | `id` | `meeting_id` |
+| `meeting_task_feedback` | `id` | `meeting_id`, `team_task_id` |
 
 ### Operaciones
 
@@ -392,11 +402,13 @@ App (Router shell)
         ├── MeetingsPage
         │   ├── MeetingListItem (lista de reuniones)
         │   ├── PendingTopicsPanel (temas flotantes)
-        │   ├── CreateMeetingModal (nueva reunión)
-        │   └── MeetingModal (detalle, 3 tabs)
-        │       ├── TeamStatusSection → MemberSnapshotCard
-        │       ├── TopicsSection (temas vinculados)
-        │       └── FeedbackSection (feedback del líder)
+        │   └── CreateMeetingModal (nueva reunión)
+        ├── MeetingDetailPage (vista completa, 2 tabs)
+        │   ├── BriefingSection (estado equipo + temas unificados)
+        │   │   ├── MemberSnapshotCard (colapsable, con comentarios por tarea)
+        │   │   │   └── TaskFeedbackField (comentarios por tarea)
+        │   │   └── TopicItem (tema con badge de tarea vinculada + comentarios)
+        │   └── FeedbackSection (feedback general + resumen respuestas)
         └── SettingsPage
             ├── TeamMembersSection (CRUD miembros)
             ├── PrioritiesSection (CRUD prioridades)
@@ -424,11 +436,11 @@ App (Router shell)
 | `TaskTimeline`      | views/team/components/          | Timeline cronológico               |
 | `CreateMeetingModal` | views/meetings/components/      | Modal para crear reunión            |
 | `MeetingListItem`    | views/meetings/components/      | Tarjeta de reunión en la lista      |
-| `MeetingModal`       | views/meetings/components/      | Modal detalle con 3 tabs            |
-| `TeamStatusSection`  | views/meetings/components/      | Tab estado del equipo               |
-| `MemberSnapshotCard` | views/meetings/components/      | Snapshot de un miembro              |
-| `TopicsSection`      | views/meetings/components/      | Tab temas de reunión                |
-| `FeedbackSection`    | views/meetings/components/      | Tab feedback del líder              |
+| `BriefingSection`    | views/meetings/components/      | Tab briefing (equipo + temas)       |
+| `MemberSnapshotCard` | views/meetings/components/      | Snapshot colapsable de un miembro   |
+| `TaskFeedbackField`  | views/meetings/components/      | Comentarios por tarea (Ctrl+Enter)  |
+| `TopicsSection`      | views/meetings/components/      | Gestión de temas de reunión         |
+| `FeedbackSection`    | views/meetings/components/      | Feedback general + resumen respuestas|
 | `PendingTopicsPanel` | views/meetings/components/      | Panel de temas pendientes globales  |
 
 ---
@@ -463,16 +475,26 @@ App (Router shell)
 - Mover tareas entre columnas con timeline event automático
 - Responsive: tabs en móvil, columnas en desktop
 
-### Reuniones con el Leader (`/meetings`)
+### Reuniones con el Leader (`/meetings` + `/meetings/:meetingId`)
 
 - Listado de reuniones ordenadas por fecha (más recientes primero)
 - Crear reuniones con fecha y notas opcionales
-- Modal de detalle con 3 tabs:
-  - **Estado del Equipo:** Snapshot auto-generado por miembro (tareas en progreso, bloqueadas, completadas desde la última reunión, progreso general)
-  - **Temas:** Crear, resolver y eliminar temas. Vincular temas flotantes a una reunión
-  - **Feedback:** Registrar feedback del líder con guardado explícito
+- **Vista de detalle a página completa** (reemplaza el antiguo modal) con 2 tabs:
+  - **Briefing:** Vista unificada que combina estado del equipo y temas
+    - Snapshots auto-generados por miembro al entrar (colapsables)
+    - Tareas pendientes, en progreso y bloqueadas con campo de comentarios cada una
+    - Tareas bloqueadas excluidas de su lista de estado original (sin duplicación)
+    - Lista unificada de todos los temas (vinculados y no vinculados a tareas)
+    - Temas vinculados a tareas muestran badge con referencia de la tarea
+    - Temas editables después de creados (título y descripción)
+    - Cada tema tiene su propio campo de comentarios
+    - Descripción de tema como textarea redimensionable
+    - Guardado manual de comentarios: botón Guardar o Ctrl+Enter
+    - Textareas auto-expandibles (máximo 5 líneas, luego scroll)
+    - Vincular temas flotantes desde un panel
+  - **Feedback:** Feedback general + resumen de todas las respuestas individuales
 - Panel de temas pendientes globales (sin reunión asignada)
-- Eliminación de reunión con cascade delete de snapshots y unlink de temas
+- Eliminación de reunión con cascade delete de snapshots, task feedback, y unlink de temas
 
 ### Configuración (`/settings`)
 

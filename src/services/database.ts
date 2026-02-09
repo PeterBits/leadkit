@@ -1,5 +1,5 @@
 const DB_NAME = 'FrontendTeamDB';
-const DB_VERSION = 5;
+const DB_VERSION = 6;
 
 export const STORE_NAMES = {
   TEAM_MEMBERS: 'team_members',
@@ -13,6 +13,7 @@ export const STORE_NAMES = {
   MEETINGS: 'meetings',
   MEETING_TOPICS: 'meeting_topics',
   MEETING_SNAPSHOTS: 'meeting_snapshots',
+  MEETING_TASK_FEEDBACK: 'meeting_task_feedback',
 } as const;
 
 export const initDB = (): Promise<IDBDatabase> => {
@@ -22,6 +23,7 @@ export const initDB = (): Promise<IDBDatabase> => {
     request.onsuccess = () => resolve(request.result);
     request.onupgradeneeded = event => {
       const db = (event.target as IDBOpenDBRequest).result;
+      const tx = (event.target as IDBOpenDBRequest).transaction!;
 
       // Delete old stores from previous versions
       const oldStores = ['tasks', 'summaries', 'teamMembers'];
@@ -79,9 +81,24 @@ export const initDB = (): Promise<IDBDatabase> => {
         mtStore.createIndex('resolved', 'resolved');
       }
 
+      // v6: add team_task_id index to meeting_topics
+      if (db.objectStoreNames.contains('meeting_topics')) {
+        const mtStore = tx.objectStore('meeting_topics');
+        if (!mtStore.indexNames.contains('team_task_id')) {
+          mtStore.createIndex('team_task_id', 'team_task_id');
+        }
+      }
+
       if (!db.objectStoreNames.contains('meeting_snapshots')) {
         const msStore = db.createObjectStore('meeting_snapshots', { keyPath: 'id' });
         msStore.createIndex('meeting_id', 'meeting_id');
+      }
+
+      // v6: new store for per-task leader feedback in meetings
+      if (!db.objectStoreNames.contains('meeting_task_feedback')) {
+        const mtfStore = db.createObjectStore('meeting_task_feedback', { keyPath: 'id' });
+        mtfStore.createIndex('meeting_id', 'meeting_id');
+        mtfStore.createIndex('team_task_id', 'team_task_id');
       }
     };
   });

@@ -1,14 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Plus, MessageSquare, Calendar } from 'lucide-react';
-import { Meeting } from '../../types';
 import { useMeetingsContext } from '../../context/MeetingsContext';
-import {
-  CreateMeetingModal,
-  MeetingListItem,
-  MeetingModal,
-  PendingTopicsPanel,
-} from './components';
+import { CreateMeetingModal, MeetingListItem, PendingTopicsPanel } from './components';
 
 function isSameDay(timestamp: number, date: Date): boolean {
   const d = new Date(timestamp);
@@ -23,8 +17,7 @@ export function MeetingsPage() {
   const { meetings, meetingTopics, meetingSnapshots, saveMeeting, deleteMeeting, isLoading } =
     useMeetingsContext();
   const location = useLocation();
-  const nav = useNavigate();
-  const [selectedMeeting, setSelectedMeeting] = useState<Meeting | null>(null);
+  const navigate = useNavigate();
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showPendingTopics, setShowPendingTopics] = useState(false);
   const handledTodayRef = useRef(false);
@@ -37,29 +30,29 @@ export function MeetingsPage() {
     const state = location.state as { createTodayMeeting?: boolean } | null;
     if (!state?.createTodayMeeting || isLoading || handledTodayRef.current) return;
     handledTodayRef.current = true;
-    nav(location.pathname, { replace: true, state: {} });
+    navigate(location.pathname, { replace: true, state: {} });
 
     const today = new Date();
     const existing = meetings.find(m => isSameDay(m.date, today));
     if (existing) {
-      setSelectedMeeting(existing);
+      navigate(`/meetings/${existing.id}`);
     } else {
       pendingOpenRef.current = true;
       const todayNormalized = new Date(today.getFullYear(), today.getMonth(), today.getDate());
       saveMeeting({ date: todayNormalized.getTime(), notes: '', leader_feedback: '' });
     }
-  }, [location.state, isLoading, meetings, saveMeeting, nav, location.pathname]);
+  }, [location.state, isLoading, meetings, saveMeeting, navigate, location.pathname]);
 
-  // Open newly created today's meeting once it appears in meetings list
+  // Navigate to newly created today's meeting once it appears in meetings list
   useEffect(() => {
     if (!pendingOpenRef.current) return;
     const today = new Date();
     const todayMeeting = meetings.find(m => isSameDay(m.date, today));
     if (todayMeeting) {
       pendingOpenRef.current = false;
-      setSelectedMeeting(todayMeeting);
+      navigate(`/meetings/${todayMeeting.id}`);
     }
-  }, [meetings]);
+  }, [meetings, navigate]);
 
   if (isLoading) {
     return (
@@ -118,7 +111,7 @@ export function MeetingsPage() {
                 meeting={meeting}
                 topicCount={topicCount}
                 hasSnapshots={hasSnapshots}
-                onOpen={setSelectedMeeting}
+                onOpen={m => navigate(`/meetings/${m.id}`)}
                 onDelete={deleteMeeting}
               />
             );
@@ -136,11 +129,6 @@ export function MeetingsPage() {
 
       {/* Create Meeting Modal */}
       {showCreateModal && <CreateMeetingModal onClose={() => setShowCreateModal(false)} />}
-
-      {/* Meeting Detail Modal */}
-      {selectedMeeting && (
-        <MeetingModal meeting={selectedMeeting} onClose={() => setSelectedMeeting(null)} />
-      )}
     </>
   );
 }

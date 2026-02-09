@@ -21,11 +21,12 @@ Multi-page React app for frontend team management: Kanban board, weekly meeting 
 
 ### Routing
 
-5 routes defined in `App.tsx` via React Router:
+6 routes defined in `App.tsx` via React Router:
 - `/` → DashboardPage (task counters + quick links)
 - `/tasks` → TasksPage (Kanban board)
 - `/team` → TeamPage (team task tracking: Kanban + detail panel + subtasks/comments/timeline)
-- `/meetings` → MeetingsPage (meetings with leader: snapshots, topics, feedback)
+- `/meetings` → MeetingsPage (meeting list, pending topics, create meeting)
+- `/meetings/:meetingId` → MeetingDetailPage (full-page meeting detail: briefing + feedback)
 - `/settings` → SettingsPage (team members + priorities + categories CRUD)
 
 All routes render inside `Layout` which provides persistent navigation (Sidebar on desktop, BottomNav on mobile).
@@ -37,20 +38,20 @@ All routes render inside `Layout` which provides persistent navigation (Sidebar 
 - **DataContext** (`context/DataContext.tsx`): `teamMembers`, `priorities`, `categories` + their CRUD handlers. Reference data shared across the app.
 - **PersonalTasksContext** (`context/PersonalTasksContext.tsx`): `personalTasks` + save/delete/move. Tech lead's own tasks.
 - **TeamTasksContext** (`context/TeamTasksContext.tsx`): `teamTasks`, `subtasks`, `taskComments`, `timelineEvents` + full CRUD. Includes cascade delete and automatic timeline events.
-- **MeetingsContext** (`context/MeetingsContext.tsx`): `meetings`, `meetingTopics`, `meetingSnapshots` + CRUD. Includes topic resolution, unlink-on-delete, and snapshot cascade delete.
+- **MeetingsContext** (`context/MeetingsContext.tsx`): `meetings`, `meetingTopics`, `meetingSnapshots`, `meetingTaskFeedback` + CRUD. Includes topic resolution, unlink-on-delete, snapshot cascade delete, and per-task feedback management.
 
 Each CRUD operation writes to IndexedDB first, then updates React state.
 
 ### Data Layer
 
-`services/database.ts` exposes a generic `dbOperation<T>(storeName, mode, operation)` wrapper and a `STORE_NAMES` constant. The DB (`FrontendTeamDB`, version 5) has 11 object stores: `team_members`, `priorities`, `categories`, `personal_tasks`, `team_tasks`, `subtasks`, `task_comments`, `timeline_events`, `meetings`, `meeting_topics`, `meeting_snapshots`. To add a new store or index, increment `DB_VERSION` and handle it in `onupgradeneeded`.
+`services/database.ts` exposes a generic `dbOperation<T>(storeName, mode, operation)` wrapper and a `STORE_NAMES` constant. The DB (`FrontendTeamDB`, version 6) has 12 object stores: `team_members`, `priorities`, `categories`, `personal_tasks`, `team_tasks`, `subtasks`, `task_comments`, `timeline_events`, `meetings`, `meeting_topics`, `meeting_snapshots`, `meeting_task_feedback`. To add a new store or index, increment `DB_VERSION` and handle it in `onupgradeneeded`.
 
 ### Component & View Organization
 
 - `views/` - Each view has its own folder with page + scoped components:
   - `views/tasks/` - TasksPage + `components/` (KanbanColumn, TaskCard, TaskModal)
   - `views/team/` - TeamPage + `components/` (TeamKanbanColumn, TeamTaskCard, TeamTaskModal, TeamTaskDetail, SubtaskList, CommentSection, TaskTimeline)
-  - `views/meetings/` - MeetingsPage + `components/` (CreateMeetingModal, MeetingListItem, MeetingModal, TeamStatusSection, MemberSnapshotCard, TopicsSection, FeedbackSection, PendingTopicsPanel)
+  - `views/meetings/` - MeetingsPage, MeetingDetailPage + `components/` (CreateMeetingModal, MeetingListItem, BriefingSection, MemberSnapshotCard, TaskFeedbackField, TopicsSection, FeedbackSection, PendingTopicsPanel)
   - `views/dashboard/` - DashboardPage
   - `views/settings/` - SettingsPage
 - `components/shared/` - PrioritySelector, CategorySelector (reusable across views)
@@ -79,7 +80,7 @@ Priority colors are applied dynamically (e.g., `` bg-${priority.color} ``, `` bo
 ### Types
 
 Entity-based type system split across two subdirectories:
-- `types/entities/` - Data model interfaces: `Category`, `PersonalTask`, `TeamTask`, `Subtask`, `TaskComment`, `TimelineEvent`, `Meeting`, `MeetingTopic`, `MeetingSnapshot`, `TeamMember`, `Priority`
+- `types/entities/` - Data model interfaces: `Category`, `PersonalTask`, `TeamTask`, `Subtask`, `TaskComment`, `TimelineEvent`, `Meeting`, `MeetingTopic`, `MeetingSnapshot`, `MeetingTaskFeedback`, `TeamMember`, `Priority`
 - `types/interfaces/` - Component props and context types, organized by entity
 - No inline interfaces in components or services — all declared in `types/`
 

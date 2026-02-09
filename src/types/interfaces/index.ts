@@ -16,8 +16,8 @@ export type {
 export type {
   MeetingsContextType,
   MeetingListItemProps,
-  MeetingModalProps,
-  TeamStatusSectionProps,
+  BriefingSectionProps,
+  TaskFeedbackFieldProps,
   TopicsSectionProps,
   FeedbackSectionProps,
   PendingTopicsPanelProps,

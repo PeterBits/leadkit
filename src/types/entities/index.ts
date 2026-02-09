@@ -8,6 +8,7 @@ export type { TaskComment } from './task-comment';
 export type { TimelineEvent, TimelineEventType } from './timeline-event';
 export type { Meeting } from './meeting';
 export type { MeetingTopic } from './meeting-topic';
+export type { MeetingTaskFeedback } from './meeting-task-feedback';
 export type {
   MeetingSnapshot,
   SnapshotTask,

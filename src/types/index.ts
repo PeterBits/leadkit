@@ -14,6 +14,7 @@ export type {
   SnapshotTask,
   SnapshotBlockedTask,
   SnapshotCompletedTask,
+  MeetingTaskFeedback,
 } from './entities';
 
 export type {
@@ -34,8 +35,8 @@ export type {
   TaskTimelineProps,
   MeetingsContextType,
   MeetingListItemProps,
-  MeetingModalProps,
-  TeamStatusSectionProps,
+  BriefingSectionProps,
+  TaskFeedbackFieldProps,
   TopicsSectionProps,
   FeedbackSectionProps,
   PendingTopicsPanelProps,
