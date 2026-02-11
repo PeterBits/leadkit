@@ -40,6 +40,7 @@ export type {
   TopicsSectionProps,
   FeedbackSectionProps,
   PendingTopicsPanelProps,
+  TasksSectionProps,
   CreateMeetingModalProps,
   MemberSnapshotCardProps,
 } from './interfaces';

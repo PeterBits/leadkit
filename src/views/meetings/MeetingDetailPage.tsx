@@ -1,12 +1,14 @@
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Users, MessageCircle } from 'lucide-react';
+import { ArrowLeft, Users, ListChecks, MessageCircle } from 'lucide-react';
 import { useMeetingsContext } from '../../context/MeetingsContext';
 import { BriefingSection } from './components/BriefingSection';
+import { TasksSection } from './components/TasksSection';
 import { FeedbackSection } from './components/FeedbackSection';
 
 const TABS = [
   { key: 'briefing', label: 'Briefing', icon: Users },
+  { key: 'tasks', label: 'Tareas', icon: ListChecks },
   { key: 'feedback', label: 'Feedback', icon: MessageCircle },
 ] as const;
 
@@ -79,6 +81,7 @@ export function MeetingDetailPage() {
 
       {/* Content */}
       {activeTab === 'briefing' && <BriefingSection meetingId={meeting.id} />}
+      {activeTab === 'tasks' && <TasksSection meetingId={meeting.id} />}
       {activeTab === 'feedback' && <FeedbackSection meeting={meeting} />}
     </>
   );

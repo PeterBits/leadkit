@@ -21,6 +21,7 @@ export type {
   TopicsSectionProps,
   FeedbackSectionProps,
   PendingTopicsPanelProps,
+  TasksSectionProps,
   CreateMeetingModalProps,
 } from './meeting';
 export type { MemberSnapshotCardProps } from './meeting-snapshot';

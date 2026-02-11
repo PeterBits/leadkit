@@ -108,6 +108,7 @@ leadkit/
 │   │   │       ├── BriefingSection.tsx
 │   │   │       ├── MemberSnapshotCard.tsx
 │   │   │       ├── TaskFeedbackField.tsx
+│   │   │       ├── TasksSection.tsx
 │   │   │       ├── TopicsSection.tsx
 │   │   │       ├── FeedbackSection.tsx
 │   │   │       ├── PendingTopicsPanel.tsx
@@ -211,7 +212,7 @@ La aplicación usa **React Router v6** con las siguientes rutas:
 | `/tasks`     | TasksPage        | Kanban de tareas                     |
 | `/team`      | TeamPage         | Seguimiento del equipo (Kanban + detalle)|
 | `/meetings`  | MeetingsPage     | Lista de reuniones                   |
-| `/meetings/:meetingId` | MeetingDetailPage | Detalle de reunión (briefing + feedback) |
+| `/meetings/:meetingId` | MeetingDetailPage | Detalle de reunión (briefing + tareas + feedback) |
 | `/settings`  | SettingsPage     | CRUD de miembros, prioridades y categorías |
 
 ### Navegación
@@ -403,11 +404,13 @@ App (Router shell)
         │   ├── MeetingListItem (lista de reuniones)
         │   ├── PendingTopicsPanel (temas flotantes)
         │   └── CreateMeetingModal (nueva reunión)
-        ├── MeetingDetailPage (vista completa, 2 tabs)
+        ├── MeetingDetailPage (vista completa, 3 tabs)
         │   ├── BriefingSection (estado equipo + temas unificados)
         │   │   ├── MemberSnapshotCard (colapsable, con comentarios por tarea)
         │   │   │   └── TaskFeedbackField (comentarios por tarea)
         │   │   └── TopicItem (tema con badge de tarea vinculada + comentarios)
+        │   ├── TasksSection (tareas activas del equipo por estado)
+        │   │   └── TaskFeedbackField (comentarios por tarea)
         │   └── FeedbackSection (feedback general + resumen respuestas)
         └── SettingsPage
             ├── TeamMembersSection (CRUD miembros)
@@ -439,6 +442,7 @@ App (Router shell)
 | `BriefingSection`    | views/meetings/components/      | Tab briefing (equipo + temas)       |
 | `MemberSnapshotCard` | views/meetings/components/      | Snapshot colapsable de un miembro   |
 | `TaskFeedbackField`  | views/meetings/components/      | Comentarios por tarea (Ctrl+Enter)  |
+| `TasksSection`       | views/meetings/components/      | Tab tareas activas por estado       |
 | `TopicsSection`      | views/meetings/components/      | Gestión de temas de reunión         |
 | `FeedbackSection`    | views/meetings/components/      | Feedback general + resumen respuestas|
 | `PendingTopicsPanel` | views/meetings/components/      | Panel de temas pendientes globales  |
@@ -479,7 +483,7 @@ App (Router shell)
 
 - Listado de reuniones ordenadas por fecha (más recientes primero)
 - Crear reuniones con fecha y notas opcionales
-- **Vista de detalle a página completa** (reemplaza el antiguo modal) con 2 tabs:
+- **Vista de detalle a página completa** (reemplaza el antiguo modal) con 3 tabs:
   - **Briefing:** Vista unificada que combina estado del equipo y temas
     - Snapshots auto-generados por miembro al entrar (colapsables)
     - Tareas pendientes, en progreso y bloqueadas con campo de comentarios cada una
@@ -492,6 +496,7 @@ App (Router shell)
     - Guardado manual de comentarios: botón Guardar o Ctrl+Enter
     - Textareas auto-expandibles (máximo 5 líneas, luego scroll)
     - Vincular temas flotantes desde un panel
+  - **Tareas:** Tareas activas del equipo organizadas por estado (bloqueadas, en progreso, pendientes) con datos en vivo, subtareas, progreso y campo de comentarios por tarea
   - **Feedback:** Feedback general + resumen de todas las respuestas individuales
 - Panel de temas pendientes globales (sin reunión asignada)
 - Eliminación de reunión con cascade delete de snapshots, task feedback, y unlink de temas

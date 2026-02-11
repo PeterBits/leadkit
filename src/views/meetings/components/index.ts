@@ -6,3 +6,4 @@ export { TaskFeedbackField } from './TaskFeedbackField';
 export { TopicsSection } from './TopicsSection';
 export { FeedbackSection } from './FeedbackSection';
 export { PendingTopicsPanel } from './PendingTopicsPanel';
+export { TasksSection } from './TasksSection';

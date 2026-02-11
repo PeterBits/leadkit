@@ -35,6 +35,7 @@ Transformar la aplicación de un Kanban simple a una herramienta completa de ges
 | 6 | Configuración | [fase-6-configuracion.md](./fase-6-configuracion.md) | Pendiente |
 | 7 | Ajustes Dashboard | [fase-7-ajustes-dashboard.md](./fase-7-ajustes-dashboard.md) | Pendiente |
 | 8 | Rediseno de Reuniones | [fase-8-rediseno-reunion.md](./fase-8-rediseno-reunion.md) | Pendiente |
+| 9 | Tab Tareas en Reunion | [fase-9-tab-tareas-reunion.md](./fase-9-tab-tareas-reunion.md) | Pendiente |
 
 ## Orden de Implementación Recomendado
 

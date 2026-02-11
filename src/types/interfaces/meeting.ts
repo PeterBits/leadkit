@@ -50,6 +50,10 @@ export interface PendingTopicsPanelProps {
   onClose: () => void;
 }
 
+export interface TasksSectionProps {
+  meetingId: string;
+}
+
 export interface CreateMeetingModalProps {
   onClose: () => void;
 }
