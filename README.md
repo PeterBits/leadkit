@@ -26,7 +26,7 @@ LEADKIT es una aplicación diseñada para technical leads que gestionan equipos 
 - Preparar y documentar reuniones semanales con el lead
 - Configurar dinámicamente miembros del equipo y prioridades
 - Almacenar todos los datos localmente en el navegador (IndexedDB)
-- **Responsive:** Sidebar en desktop, bottom tab bar en móvil
+- **Responsive:** Sidebar colapsable en desktop, bottom tab bar en móvil
 - **PWA:** Instalable como aplicación nativa
 
 **Contexto de uso:** Pensada para technical leads con equipos de cualquier tamaño, con reuniones periódicas de seguimiento.
@@ -174,12 +174,14 @@ leadkit/
 │   │   │   ├── priority.ts
 │   │   │   ├── category.ts
 │   │   │   ├── context.ts
+│   │   │   ├── layout.ts
 │   │   │   ├── task.ts
 │   │   │   └── index.ts
 │   │   └── index.ts
 │   ├── utils/
 │   │   ├── dates.ts                    # Utilidades de fechas/semanas
 │   │   ├── ids.ts                      # Generación de IDs
+│   │   ├── local-storage.ts           # Hook useLocalStorage<T>
 │   │   ├── team-tasks.ts              # getTaskProgress, isTaskBlocked
 │   │   └── meeting-snapshots.ts       # generateMeetingSnapshots
 │   ├── App.tsx                         # Router shell (~20 líneas)
@@ -217,7 +219,7 @@ La aplicación usa **React Router v6** con las siguientes rutas:
 
 ### Navegación
 
-- **Desktop (sm:+):** Sidebar fijo a la izquierda (240px) con iconos + labels
+- **Desktop (sm:+):** Sidebar colapsable a la izquierda (240px expandido, 68px colapsado) con iconos + labels. Tooltips en modo colapsado. Preferencia persistida en localStorage.
 - **Móvil:** Bottom tab bar fijo con 5 iconos
 
 ### Gestión de Estado
@@ -423,7 +425,7 @@ App (Router shell)
 | Componente        | Ubicación                       | Responsabilidad                    |
 | ----------------- | ------------------------------- | ---------------------------------- |
 | `Layout`          | components/layout/              | Shell con Sidebar + BottomNav      |
-| `Sidebar`         | components/layout/              | Navegación desktop                 |
+| `Sidebar`         | components/layout/              | Navegación desktop (colapsable)    |
 | `BottomNav`       | components/layout/              | Navegación móvil                   |
 | `TaskCard`        | views/tasks/components/         | Renderiza tarea con acciones       |
 | `KanbanColumn`    | views/tasks/components/         | Columna del Kanban                 |
@@ -540,7 +542,7 @@ App (Router shell)
 ### Responsive Design
 
 - **Móvil:** Kanban con tabs, modal tipo bottom sheet, bottom tab bar
-- **Desktop:** Kanban con 3 columnas, modal centrado, sidebar lateral
+- **Desktop:** Kanban con 3 columnas, modal centrado, sidebar lateral colapsable
 
 ---
 

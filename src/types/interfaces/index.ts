@@ -25,3 +25,4 @@ export type {
   CreateMeetingModalProps,
 } from './meeting';
 export type { MemberSnapshotCardProps } from './meeting-snapshot';
+export type { SidebarProps } from './layout';

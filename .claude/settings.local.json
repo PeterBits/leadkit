@@ -17,7 +17,8 @@
       "Bash(npm run lint)",
       "Bash(npm run build:*)",
       "Bash(git add:*)",
-      "Bash(npm run format:*)"
+      "Bash(npm run format:*)",
+      "Bash(git -C \"C:\\\\Users\\\\Pedro\\\\Desktop\\\\LEADKIT\" log --oneline -5)"
     ]
   }
 }
